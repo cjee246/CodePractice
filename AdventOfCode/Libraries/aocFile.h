@@ -2,7 +2,7 @@
 /*
  * Author: Calvin Jee
  * Email: cjee246@gmail.com
- * 
+ *
  * Date: 2022-03-11
  */
 
@@ -30,5 +30,12 @@ void exampleFunc(int parameter);
  *  @param      stream variable to modify
  */
 int loadFile(std::ifstream &filestream);
+
+/*!
+ *  @brief      iostream prompt for file with warnings for "does not exist"
+ *  @param      filestream variable to modify
+ *  @param      filestr modify string pointer
+ */
+int loadFile(std::ifstream &filestream, std::string *filestr);
 
 #endif
