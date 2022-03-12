@@ -10,7 +10,8 @@
 				"-g",
 				"${file}",
 				"-o",
-				"${fileDirname}/${fileBasenameNoExtension}"
+				"${fileDirname}/${fileBasenameNoExtension}",
+				"../Libraries/aocFile.cpp"
 			],
 			"options": {
 				"cwd": "${fileDirname}"

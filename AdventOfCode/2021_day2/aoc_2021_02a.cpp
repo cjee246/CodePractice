@@ -13,10 +13,18 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include "../Libraries/aocFile.h"
 
 using namespace std;
 
-int main() {
-    
+int main()
+{
+    //apparently this makes iostream faster
+    //std::ios::sync_with_stdio(false);
+
+    ifstream inputFile;
+    loadFile(inputFile);
+
+
     return 0;
 }
