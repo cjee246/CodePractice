@@ -23,7 +23,7 @@ using namespace std;
 /******************************************************************************/
 /* GLOBAL VARS */
 /******************************************************************************/
-#define DAYS 18u
+#define DAYS 80u
 
 /******************************************************************************/
 /* ADDITIONAL FUNCTIONS */
@@ -51,6 +51,7 @@ int main()
     string str, substr;
     fileInput >> str;
     stringstream strStream(str);
+    fish.clear();
     while (strStream.good())
     {
         getline(strStream, substr, ',');
@@ -58,10 +59,11 @@ int main()
     }
 
     // process fishies
-    for (uint8_t i = 0; i < DAYS; i++)
+    int l = fish.max_size();
+    for (uint16_t i = 0; i < DAYS; i++)
     {
-        uint16_t fishCount = fish.size();
-        for (uint8_t j = 0; j < fishCount; j++)
+        uint32_t fishCount = fish.size();
+        for (uint32_t j = 0; j < fishCount; j++)
         {
             if (fish[j] == 0)
             {
