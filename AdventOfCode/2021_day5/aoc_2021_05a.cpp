@@ -22,10 +22,10 @@ using namespace std;
 /******************************************************************************/
 /* ADDITIONAL FUNCTIONS */
 /******************************************************************************/
-static void getLines(ifstream &filestream, vector<vector<vector<uint16_t>>> *lines)
+static uint16_t getLines(ifstream &filestream, vector<vector<vector<uint16_t>>> *lines)
 {
     string str, substr;
-    uint16_t x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+    uint16_t x1 = 0, y1 = 0, x2 = 0, y2 = 0, max = 0;
     stringstream strStream;
     while (filestream >> str)
     {
@@ -49,12 +49,21 @@ static void getLines(ifstream &filestream, vector<vector<vector<uint16_t>>> *lin
         getline(strStream, substr);
         y2 = stoi(substr);
 
+        //get max
+        vector<uint16_t> temp = {x1, y1, x2, y2};
+        uint16_t tempMax = *max_element(temp.begin(), temp.end());
+        if (tempMax > max)
+        {
+            max = tempMax;
+        }
+
         // if vertical/horizontal, add to vector
         if (x1 == x2 || y1 == y2)
         {
             (*lines).push_back({{x1, y1}, {x2, y2}});
         }
     }
+    return max;
 }
 
 /******************************************************************************/
@@ -73,9 +82,9 @@ int main()
 
     // read in vector pairs
     vector<vector<vector<uint16_t>>> lines;
-    uint16_t grid[1000][1000] = { 0 };
-    uint16_t start = 0, end = 0, x = 0, y = 0;
-    getLines(fileInput, &lines);
+    uint16_t x = 0, y = 0, gridSize = 0;
+    gridSize = getLines(fileInput, &lines) + 1;
+    uint16_t grid[gridSize][gridSize] = { 0 };
     for (int16_t i = 0; i < lines.size(); i++)
     {
         x = lines[i][0][0];
