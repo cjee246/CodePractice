@@ -18,13 +18,53 @@
 
 using namespace std;
 
+
+
+/******************************************************************************/
+/* GLOBAL VARS */
+/******************************************************************************/
+static ifstream fileInput;
+static vector<vector<vector<uint16_t>>> lines;
+
+
+
 /******************************************************************************/
 /* ADDITIONAL FUNCTIONS */
 /******************************************************************************/
-static void func()
+static void getLines()
 {
+    string str, substr;
+    uint16_t x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+    while (fileInput >> str)
+    {
+        // start string stream
+        stringstream strStream(str);
 
+        // get first pair from string
+        getline(strStream, substr, ',');
+        x1 = stoi(substr);
+        getline(strStream, substr, '\n');
+        y1 = stoi(substr);
+
+        // get second pair from file
+        fileInput >> str;
+        fileInput >> str;
+
+        // get second pair from string
+        getline(strStream, substr, ',');
+        x2 = stoi(substr);
+        getline(strStream, substr, '\n');
+        y2 = stoi(substr);
+
+        // if vertical/horizontal, add to vector
+        if (x1 == x2 || y1 == y2)
+        {
+            lines.push_back( { {x1, y1}, {x2, y2} } );
+        }
+    }
 }
+
+
 
 /******************************************************************************/
 /* MAIN */
@@ -33,7 +73,7 @@ int main()
 {
     // read file
     std::ios::sync_with_stdio(false);
-    ifstream fileInput;
+
     if (loadFile(fileInput))
     {
         fileInput.close();
@@ -41,26 +81,11 @@ int main()
     }
 
     // read in vector pairs
-    string str, substr;
-    vector<vector<vector<uint8_t>>> lines;
+    getLines();
     uint16_t count = 0;
-    uint8_t x1 = 0, x2 = 0, y1 = 0, y2 = 0;
-    while (fileInput >> str)
-    {
-        stringstream strStream(str);
-        getline(strStream, substr, ',');
-        x1 = stoi(substr);
-        getline(strStream, substr, '\n');
-        y1 = stoi(substr);
-        fileInput >> str;
-        fileInput >> str;
-        getline(strStream, substr, ',');
-        x2 = stoi(substr);
-        getline(strStream, substr, '\n');
-        y2 = stoi(substr);
-    }
 
-    // 
+    //
     fileInput.close();
     return 0;
 }
+
