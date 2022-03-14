@@ -58,8 +58,8 @@ int main()
     }
 
     // vector of counts
-    vector<uint16_t> counts;
-    uint16_t max;
+    vector<uint64_t> counts;
+    uint64_t max;
     for (uint16_t i = 0; i < pos.size(); i++)
     {
         if (pos[i] >= counts.size())
@@ -72,8 +72,8 @@ int main()
     int check = accumulate(counts.begin(), counts.end(), 0);
     
     // set up scaling vector
-    vector<uint16_t> scale(counts.size());
-    for (uint16_t i = 1; i < scale.size(); i++)
+    vector<uint64_t> scale(counts.size());
+    for (uint64_t i = 1; i < scale.size(); i++)
     {
         scale[i] = scale[i-1] + i;
     }
