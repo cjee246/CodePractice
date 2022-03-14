@@ -79,7 +79,7 @@ int main()
     }
 
     // iterate starting positions, look for change
-    double minThis = 0, minLast = 0;
+    uint64_t minThis = 0, minLast = 0;
     uint16_t startPos = 0;
     bool minReached = false;
     while (!minReached)
