@@ -69,6 +69,7 @@ int main()
         }
         counts[pos[i]]++;
     }
+    int check = accumulate(counts.begin(), counts.end(), 0);
     
     // set up scaling vector
     vector<uint16_t> scale(counts.size());
@@ -76,8 +77,6 @@ int main()
     {
         scale[i] = scale[i-1] + i;
     }
-
-    int check = accumulate(counts.begin(), counts.end(), 0);
 
     // iterate starting positions, look for change
     double minThis = 0, minLast = 0;
@@ -88,13 +87,10 @@ int main()
         minThis = 0;
         for (uint16_t i = 0; i < counts.size(); i++)
         {
-            int64_t val = startPos - i;
-            uint64_t absolute = abs(val);
-            minThis += counts[i] * scale[absolute];
+            minThis += counts[i] * scale[abs(startPos - i)];
         }
-        if (minThis > minLast && startPos > 100)
+        if (minThis > minLast && startPos > 0)
         {
-            minReached = true;
             break;
         }
         else
