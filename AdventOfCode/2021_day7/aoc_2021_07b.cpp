@@ -73,7 +73,7 @@ int main()
     
     // set up scaling vector
     vector<uint16_t> scale(counts.size());
-    for (uint16_t i = 1; i < counts.size(); i++)
+    for (uint16_t i = 1; i < scale.size(); i++)
     {
         scale[i] = scale[i-1] + i;
     }
