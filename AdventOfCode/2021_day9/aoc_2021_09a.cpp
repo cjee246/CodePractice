@@ -28,6 +28,10 @@ using namespace std;
 /* FUNCTION DECLARATIONS */
 /******************************************************************************/
 static void getGrid(ifstream &fileStream, vector<vector<uint8_t>> *vecGrid);
+static void scanX(vector<vector<uint8_t>> *vecGrid,
+                  vector<vector<uint8_t>> *vecCoords);
+static void scanY(vector<vector<uint8_t>> *vecGrid,
+                  vector<vector<uint8_t>> *vecCoords);
 
 /******************************************************************************/
 /* MAIN */
@@ -46,6 +50,9 @@ int main()
     // get grid
     vector<vector<uint8_t>> grid;
     getGrid(fileInput, &grid);
+    vector<vector<uint8_t>> coords;
+    scanX(&grid, &coords);
+    scanY(&grid, &coords);
 
     // how to find low points?
     // scan horizontally, save positions
@@ -78,4 +85,68 @@ static void getGrid(ifstream &fileStream, vector<vector<uint8_t>> *vecGrid)
         }
     }
     (*vecGrid).pop_back();
+}
+
+static void scanX(vector<vector<uint8_t>> *vecGrid,
+                  vector<vector<uint8_t>> *vecCoords)
+{
+    for (uint8_t i = 0; i < (*vecGrid).size(); i++)
+    {
+        if ((*vecGrid)[i][0] < (*vecGrid)[i][1])
+        {
+            (*vecCoords).push_back({i, 0});
+        }
+        for (uint8_t j = 1; j < (*vecGrid)[i].size() - 1; j++)
+        {
+            if (((*vecGrid)[i][j] < (*vecGrid)[i][j + 1]) &&
+                ((*vecGrid)[i][j] < (*vecGrid)[i][j - 1]))
+            {
+                (*vecCoords).push_back({i, j});
+                j++;
+            }
+        }
+        if ((*vecGrid)[i][(*vecGrid)[i].size() - 1] <
+            (*vecGrid)[i][(*vecGrid)[i].size() - 2])
+        {
+            (*vecCoords).push_back({i, (*vecGrid)[i].size() - 1});
+        }
+    }
+}
+
+static void scanY(vector<vector<uint8_t>> *vecGrid,
+                  vector<vector<uint8_t>> *vecCoords)
+{
+    const uint8_t gridSize = (*vecGrid).size();
+    for (int64_t i = 0; i < (*vecCoords).size(); i++)
+    {
+        if ((*vecCoords)[i][0] == 0)
+        {
+            if ((*vecGrid)[(*vecCoords)[i][0]][(*vecCoords)[i][1]] >
+                (*vecGrid)[(*vecCoords)[i][0] + 1][(*vecCoords)[i][1]])
+            {
+                (*vecCoords).erase((*vecCoords).begin() + i);
+                i--;
+            }
+        }
+        else if ((*vecCoords)[i][0] == (*vecGrid).size() - 1)
+        {
+            if ((*vecGrid)[(*vecCoords)[i][0]][(*vecCoords)[i][1]] >
+                (*vecGrid)[(*vecCoords)[i][0] - 1][(*vecCoords)[i][1]])
+            {
+                (*vecCoords).erase((*vecCoords).begin() + i);
+                i--;
+            }
+        }
+        else
+        {
+            if (((*vecGrid)[(*vecCoords)[i][0]][(*vecCoords)[i][1]] >
+                 (*vecGrid)[(*vecCoords)[i][0] - 1][(*vecCoords)[i][1]]) ||
+                ((*vecGrid)[(*vecCoords)[i][0]][(*vecCoords)[i][1]] >
+                 (*vecGrid)[(*vecCoords)[i][0] + 1][(*vecCoords)[i][1]]))
+            {
+                (*vecCoords).erase((*vecCoords).begin() + i);
+                i--;
+            }
+        }
+    }
 }
