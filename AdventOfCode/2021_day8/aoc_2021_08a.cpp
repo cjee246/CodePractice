@@ -2,7 +2,7 @@
  * Author: Calvin Jee
  * Email: cjee246@gmail.com
  *
- * Date: YYYY-MM-DD
+ * Date: 2022-03-19
  */
 
 /******************************************************************************/
@@ -32,8 +32,7 @@ static void getStrVec(ifstream &fileStream, vector<string> *vecStr);
 static void parseStrVec(vector<string> *vecStr,
                         vector<vector<string>> *vecCode,
                         vector<vector<string>> *vecData);
-static void getLine();
-static void getEncryption();
+static void getCode();
 static void getOutput();
 
 /******************************************************************************/
@@ -59,9 +58,23 @@ int main()
 
     // look for     1, 4, 7, 8 (unique segments)
     // equates to   2, 4, 3, 7 counts
+    uint64_t count = 0;
+    for (auto &vec : vecData)
+    {
+        for (auto &str : vec)
+        {
+            switch (str.length())
+            {
+            case 2: case 4: case 3: case 7:
+                count++;
+            default:
+                break;
+            }
+        }
+    }
 
     // print and exit
-    cout << '\n';
+    cout << count <<'\n';
     fileInput.close();
     return 0;
 }
@@ -95,7 +108,7 @@ static void parseStrVec(vector<string> *vecStr,
         while (substr != "|")
         {
             getline(strStream, substr, ' ');
-            if (substr == "|")
+            if (substr == "|" || substr.length() == 0)
             {
                 break;
             }
