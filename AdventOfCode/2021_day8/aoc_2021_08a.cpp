@@ -28,7 +28,10 @@ using namespace std;
 /******************************************************************************/
 /* FUNCTION DECLARATIONS */
 /******************************************************************************/
-static void func();
+static void getString(ifstream &fileStream, vector<string> *vecStr);
+static void getLine();
+static void getEncryption();
+static void getOutput();
 
 /******************************************************************************/
 /* MAIN */
@@ -45,6 +48,8 @@ int main()
     }
 
     // get encryption and data
+    vector<string> vecStr;
+    getString(fileInput, &vecStr);
 
     // look for     1, 4, 7, 8 (unique segments)
     // equates to   2, 4, 3, 7 counts
@@ -58,7 +63,12 @@ int main()
 /******************************************************************************/
 /* FUNCTION DEFINITIONS */
 /******************************************************************************/
-static void func()
+static void getString(ifstream &fileStream, vector<string> *vecStr)
 {
+    string substr;
+    while (getline(fileStream, substr))
+    {
+        (*vecStr).push_back(substr);
+    }
 
 }
