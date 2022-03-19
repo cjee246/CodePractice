@@ -34,6 +34,7 @@ static void parseStrVec(vector<string> *vecStr,
                         vector<vector<string>> *vecData);
 static void getCode();
 static void getOutput();
+static uint16_t getVal(vector<string> *vecData, vector<string> *vecCode);
 
 /******************************************************************************/
 /* MAIN */
@@ -55,27 +56,17 @@ int main()
     vector<vector<string>> vecData;
     getStrVec(fileInput, &vecStr);
     parseStrVec(&vecStr, &vecCode, &vecData);
-    getCode();
 
-    // look for     1, 4, 7, 8 (unique segments)
-    // equates to   2, 4, 3, 7 counts
+    // go through each vector element and get value
+    vector<uint32_t> vecVal;
     uint64_t count = 0;
-    for (auto &vec : vecData)
+    for (uint16_t i = 0; i < vecData.size(); i++)
     {
-        for (auto &str : vec)
-        {
-            switch (str.length())
-            {
-            case 2: case 4: case 3: case 7:
-                count++;
-            default:
-                break;
-            }
-        }
+        vecVal.push_back(getVal(&vecData[i], &vecCode[i]));
     }
 
     // print and exit
-    cout << count <<'\n';
+    cout << accumulate(vecVal.begin(), vecVal.end(), 0) << '\n';
     fileInput.close();
     return 0;
 }
@@ -124,6 +115,101 @@ static void parseStrVec(vector<string> *vecStr,
     }
 }
 
+static uint16_t getVal(vector<string> *vecData, vector<string> *vecCode)
+{
+    // save 4 and 7
+    string knowns[2];
+    for (auto &str : (*vecCode))
+    {
+        if (str.size() == 4)
+        {
+            knowns[0] = str;
+        }
+        else if (str.size() == 3)
+        {
+            knowns[1] = str;
+        }
+    }
+
+    // determine digits
+    char charVal[4];
+    for (uint8_t i = 0; i < 4; i++)
+    {
+        uint8_t count4 = 0;
+        uint8_t count7 = 0;
+        switch ((*vecData)[i].length())
+        {
+        case 2:
+            charVal[i] = '1';
+            break;
+        case 4:
+            charVal[i] = '4';
+            break;
+        case 3:
+            charVal[i] = '7';
+            break;
+        case 7:
+            charVal[i] = '8';
+            break;
+        case 5:
+            for (uint8_t j = 0; j < 5; j++)
+            {
+                if (knowns[0].find((*vecData)[i][j]) >= 0)
+                {
+                    count4++;
+                }
+                if (knowns[1].find((*vecData)[i][j]) >= 0)
+                {
+                    count7++;
+                }
+            }
+            if (count4 == 2)
+            {
+                charVal[i] = '2';
+            }
+            else if (count7 == 3)
+            {
+                charVal[i] = '3';
+            }
+            else
+            {
+                charVal[i] = '5';
+            }
+            break;
+        case 6:
+            for (uint8_t j = 0; j < 6; j++)
+            {
+                if (knowns[0].find((*vecData)[i][j]) >= 0)
+                {
+                    count4++;
+                }
+                if (knowns[1].find((*vecData)[i][j]) >= 0)
+                {
+                    count7++;
+                }
+            }
+            if (count7 == 2)
+            {
+                charVal[i] = '6';
+            }
+            else if (count4 == 3)
+            {
+                charVal[i] = '0';
+            }
+            else
+            {
+                charVal[i] = '9';
+            }
+            break;
+        default:
+            break;
+        }
+    }
+
+    // return final 4-digit value
+    return stoi(charVal);
+}
+
 static void getCode()
 {
     /*
@@ -141,7 +227,7 @@ static void getCode()
     // size 6, val = 0, 6, 9
 
     // size 6 unique values:
-    // compare to 1, val = 6 if only one match
+    // compare to 7, val = 6 if only 2 matches
     // compare to 4, val = 0 if only 3 matches
     // otherwise, val = 9
 
