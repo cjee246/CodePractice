@@ -32,8 +32,6 @@ static void getStrVec(ifstream &fileStream, vector<string> *vecStr);
 static void parseStrVec(vector<string> *vecStr,
                         vector<vector<string>> *vecCode,
                         vector<vector<string>> *vecData);
-static void getCode();
-static void getOutput();
 static uint16_t getVal(vector<string> *vecData, vector<string> *vecCode);
 
 /******************************************************************************/
@@ -142,101 +140,73 @@ static uint16_t getVal(vector<string> *vecData, vector<string> *vecCode)
         uint8_t count7 = 0;
         switch ((*vecData)[i].length())
         {
-        case 2:
-            charVal[i] = '1';
-            break;
-        case 4:
-            charVal[i] = '4';
-            break;
-        case 3:
-            charVal[i] = '7';
-            break;
-        case 7:
-            charVal[i] = '8';
-            break;
-        case 5:
-            for (uint8_t j = 0; j < 5; j++)
-            {
-                if (knowns[0].find((*vecData)[i][j]) != string::npos)
+            case 2:
+                charVal[i] = '1';
+                break;
+            case 4:
+                charVal[i] = '4';
+                break;
+            case 3:
+                charVal[i] = '7';
+                break;
+            case 7:
+                charVal[i] = '8';
+                break;
+            case 5:
+                for (uint8_t j = 0; j < 5; j++)
                 {
-                    count4++;
+                    if (knowns[0].find((*vecData)[i][j]) != string::npos)
+                    {
+                        count4++;
+                    }
+                    if (knowns[1].find((*vecData)[i][j]) != string::npos)
+                    {
+                        count7++;
+                    }
                 }
-                if (knowns[1].find((*vecData)[i][j]) != string::npos)
+                if (count4 == 2)
                 {
-                    count7++;
+                    charVal[i] = '2';
                 }
-            }
-            if (count4 == 2)
-            {
-                charVal[i] = '2';
-            }
-            else if (count7 == 3)
-            {
-                charVal[i] = '3';
-            }
-            else
-            {
-                charVal[i] = '5';
-            }
-            break;
-        case 6:
-            for (uint8_t j = 0; j < 6; j++)
-            {
-                if (knowns[0].find((*vecData)[i][j]) != string::npos)
+                else if (count7 == 3)
                 {
-                    count4++;
+                    charVal[i] = '3';
                 }
-                if (knowns[1].find((*vecData)[i][j]) != string::npos)
+                else
                 {
-                    count7++;
+                    charVal[i] = '5';
                 }
-            }
-            if (count7 == 2)
-            {
-                charVal[i] = '6';
-            }
-            else if (count4 == 3)
-            {
-                charVal[i] = '0';
-            }
-            else
-            {
-                charVal[i] = '9';
-            }
-            break;
-        default:
-            break;
+                break;
+            case 6:
+                for (uint8_t j = 0; j < 6; j++)
+                {
+                    if (knowns[0].find((*vecData)[i][j]) != string::npos)
+                    {
+                        count4++;
+                    }
+                    if (knowns[1].find((*vecData)[i][j]) != string::npos)
+                    {
+                        count7++;
+                    }
+                }
+                if (count7 == 2)
+                {
+                    charVal[i] = '6';
+                }
+                else if (count4 == 3)
+                {
+                    charVal[i] = '0';
+                }
+                else
+                {
+                    charVal[i] = '9';
+                }
+                break;
+            default:
+                break;
         }
     }
 
     // return final 4-digit value
     return stoi(charVal);
-}
-
-static void getCode()
-{
-    /*
-    // init code vector
-    vector<string> vec(7);
-
-    // Define Rules:
-    // size 2, val = 1
-    // size 3, val = 7
-    // size 4, val = 4
-    // size 7, val = 8
-
-    // Secondary Rules
-    // size 5, val = 2, 3, 5
-    // size 6, val = 0, 6, 9
-
-    // size 6 unique values:
-    // compare to 7, val = 6 if only 2 matches
-    // compare to 4, val = 0 if only 3 matches
-    // otherwise, val = 9
-
-    // size 5 unique values:
-    // compare to 4, val = 2 if only 2 matches
-    // compare to 7, val = 3 if all 3 match
-    // otherwise, val = 5
-    */
 }
