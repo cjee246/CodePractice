@@ -47,19 +47,23 @@ int main()
         return 0;
     }
 
-    // get grid
+    // get grid and min coords
     vector<vector<uint8_t>> grid;
     getGrid(fileInput, &grid);
     vector<vector<uint8_t>> coords;
     scanX(&grid, &coords);
     scanY(&grid, &coords);
 
-    // how to find low points?
-    // scan horizontally, save positions
-    // scan vertically at positions only?
+    // sum  values of coords and count
+    uint64_t risk = 0;
+    for (auto &coord : coords)
+    {
+        risk++;
+        risk += (uint64_t)grid[coord[0]][coord[1]];
+    }
 
     // print and exit
-    cout << '\n';
+    cout << risk << '\n';
     fileInput.close();
     return 0;
 }
@@ -76,7 +80,7 @@ static void getGrid(ifstream &fileStream, vector<vector<uint8_t>> *vecGrid)
     {
         if (isdigit(fileChar))
         {
-            (*vecGrid)[row].push_back((uint8_t)fileChar);
+            (*vecGrid)[row].push_back(stoi(&fileChar));
         }
         else
         {
