@@ -28,7 +28,10 @@ using namespace std;
 /******************************************************************************/
 /* FUNCTION DECLARATIONS */
 /******************************************************************************/
-static void getString(ifstream &fileStream, vector<string> *vecStr);
+static void getStrVec(ifstream &fileStream, vector<string> *vecStr);
+static void parseStrVec(vector<string> *vecStr,
+                        vector<vector<string>> *vecCode,
+                        vector<vector<string>> *vecData);
 static void getLine();
 static void getEncryption();
 static void getOutput();
@@ -47,9 +50,12 @@ int main()
         return 0;
     }
 
-    // get encryption and data
+    // get code and data
     vector<string> vecStr;
-    getString(fileInput, &vecStr);
+    vector<vector<string>> vecCode;
+    vector<vector<string>> vecData;
+    getStrVec(fileInput, &vecStr);
+    parseStrVec(&vecStr, &vecCode, &vecData);
 
     // look for     1, 4, 7, 8 (unique segments)
     // equates to   2, 4, 3, 7 counts
@@ -63,12 +69,43 @@ int main()
 /******************************************************************************/
 /* FUNCTION DEFINITIONS */
 /******************************************************************************/
-static void getString(ifstream &fileStream, vector<string> *vecStr)
+static void getStrVec(ifstream &fileStream, vector<string> *vecStr)
 {
     string substr;
     while (getline(fileStream, substr))
     {
         (*vecStr).push_back(substr);
     }
+}
 
+static void parseStrVec(vector<string> *vecStr,
+                        vector<vector<string>> *vecCode,
+                        vector<vector<string>> *vecData)
+{
+    stringstream strStream;
+    string substr;
+    uint8_t i = 0;
+    for (auto &str : (*vecStr))
+    {
+        strStream.clear();
+        strStream << str;
+        (*vecCode).push_back(vector<string>());
+        (*vecData).push_back(vector<string>());
+
+        while (substr != "|")
+        {
+            getline(strStream, substr, ' ');
+            if (substr == "|")
+            {
+                break;
+            }
+            (*vecCode)[i].push_back(substr);
+        }
+        while (strStream.good())
+        {
+            getline(strStream, substr, ' ');
+            (*vecData)[i].push_back(substr);
+        }
+        i++;
+    }
 }
