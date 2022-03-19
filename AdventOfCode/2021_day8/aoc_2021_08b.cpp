@@ -79,7 +79,10 @@ static void getStrVec(ifstream &fileStream, vector<string> *vecStr)
     string substr;
     while (getline(fileStream, substr))
     {
-        (*vecStr).push_back(substr);
+        if (substr.size() > 0)
+        {
+            (*vecStr).push_back(substr);
+        }
     }
 }
 
@@ -100,7 +103,7 @@ static void parseStrVec(vector<string> *vecStr,
         while (substr != "|")
         {
             getline(strStream, substr, ' ');
-            if (substr == "|" || substr.length() == 0)
+            if (substr == "|")
             {
                 break;
             }
@@ -154,11 +157,11 @@ static uint16_t getVal(vector<string> *vecData, vector<string> *vecCode)
         case 5:
             for (uint8_t j = 0; j < 5; j++)
             {
-                if (knowns[0].find((*vecData)[i][j]) >= 0)
+                if (knowns[0].find((*vecData)[i][j]) != string::npos)
                 {
                     count4++;
                 }
-                if (knowns[1].find((*vecData)[i][j]) >= 0)
+                if (knowns[1].find((*vecData)[i][j]) != string::npos)
                 {
                     count7++;
                 }
@@ -179,11 +182,11 @@ static uint16_t getVal(vector<string> *vecData, vector<string> *vecCode)
         case 6:
             for (uint8_t j = 0; j < 6; j++)
             {
-                if (knowns[0].find((*vecData)[i][j]) >= 0)
+                if (knowns[0].find((*vecData)[i][j]) != string::npos)
                 {
                     count4++;
                 }
-                if (knowns[1].find((*vecData)[i][j]) >= 0)
+                if (knowns[1].find((*vecData)[i][j]) != string::npos)
                 {
                     count7++;
                 }
