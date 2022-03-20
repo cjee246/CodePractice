@@ -32,6 +32,10 @@ static void scanX(vector<vector<uint8_t>> *vecGrid,
                   vector<vector<uint8_t>> *vecCoords);
 static void scanY(vector<vector<uint8_t>> *vecGrid,
                   vector<vector<uint8_t>> *vecCoords);
+static void scanBasin(vector<vector<uint8_t>> *vecGrid,
+                      vector<vector<uint8_t>> *vecCoords);
+static uint64_t countUp(vector<vector<uint8_t>> *vecGrid,
+                        vector<uint8_t> coord);
 
 /******************************************************************************/
 /* MAIN */
@@ -61,6 +65,9 @@ int main()
         risk++;
         risk += (uint64_t)grid[coord[0]][coord[1]];
     }
+
+    // scan basin
+    scanBasin(&grid, &coords);
 
     // print and exit
     cout << risk << '\n';
@@ -153,4 +160,48 @@ static void scanY(vector<vector<uint8_t>> *vecGrid,
             }
         }
     }
+}
+
+static void scanBasin(vector<vector<uint8_t>> *vecGrid,
+                      vector<vector<uint8_t>> *vecCoords)
+{
+    for (auto &coord : (*vecCoords))
+    {
+        uint64_t x = coord[0];
+        uint64_t y = coord[1];
+        uint64_t i = 0, j = 0;
+
+        // go up: i--
+        while ((*vecGrid)[coord[x + i]][coord[y]] != 9)
+        {
+            i--;
+            if (x - i < 0)
+            {
+                break;
+            }
+            while ((*vecGrid)[coord[x + i]][coord[y + j]] != 9)
+            {
+            }
+        }
+
+        // go down: i++
+
+        // go left: j--
+
+        // go right: j++
+    }
+}
+
+static uint64_t countUp(vector<vector<uint8_t>> *vecGrid,
+                        vector<uint8_t> coord)
+{
+    int64_t x = coord[0]--;
+    int64_t y = coord[1];
+    uint64_t count = 0;
+    while ((*vecGrid)[x][y] != 9 && x > 0)
+    {
+        count++;
+        x++;
+    }
+    return count;
 }
