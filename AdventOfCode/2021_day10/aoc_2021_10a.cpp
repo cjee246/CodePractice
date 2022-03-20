@@ -25,6 +25,9 @@ using namespace std;
 /******************************************************************************/
 #define VAR 0
 
+static vector<char> vecOpen = {'(', '[', '{', '<'};
+static vector<char> vecClose = {')', ']', '}', '>'};
+
 /******************************************************************************/
 /* FUNCTION DECLARATIONS */
 /******************************************************************************/
@@ -67,56 +70,32 @@ int main()
 static char checkSyntax(string line)
 {
     stringstream strStream;
-    vector<vector<char>> vecChar = {{'(', ')'},
-                                    {'[', ']'},
-                                    {'{', '}'},
-                                    {'<', '>'}};
-    vector<int16_t> count;
-    vector<vector<char>> order;
-    vector<vector<char>>::iterator it;
-    uint16_t idx;
+    vector<char> vecTrack;
     char c_return;
+    
     for (uint16_t i = 0; i < line.size(); i++)
     {
         c_return = line.at(i);
-        for (uint8_t i = 0; i < vecChar.size(); i++)
+        for (uint8_t j = 0; j < vecOpen.size(); j++)
         {
-            if (c_return == vecChar[i][0] || c_return == vecChar[i][1])
+            if (c_return == vecOpen[j])
             {
-                // find index of char set
-                it = find(order.begin(), order.end(), vecChar[i]);
-                if (it != order.end())
+                vecTrack.push_back(c_return);
+                break;
+            }
+            else if (c_return == vecClose[j])
+            {
+                if (vecTrack.back() != vecOpen[j])
                 {
-                    idx = distance(order.begin(), it);
+                    return c_return;
                 }
                 else
                 {
-                    order.push_back(vecChar[i]);
-                    count.push_back(0);
-                    idx = order.size() - 1;
-                }
-
-                // acc count of char set
-                if (c_return == vecChar[i][0])
-                {
-                    count[idx]++;
-                }
-                else
-                {
-                    count[idx]--;
-                }
-
-                // check bracket closure
-                for (uint8_t j = 1; j < count.size(); j++)
-                {
-                    if (count[j] > count[j - 1])
-                    {
-                        return c_return;
-                    }
+                    vecTrack.pop_back();
                 }
                 break;
             }
         }
     }
-    return 'x';
+    return ' ';
 }
