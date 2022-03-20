@@ -35,7 +35,8 @@ static void scanY(vector<vector<uint8_t>> *vecGrid,
 static uint64_t scanBasin(vector<vector<uint8_t>> *vecGrid,
                           vector<uint8_t> *coord);
 static void raiseDirection(vector<vector<uint8_t>> *vecGrid,
-                               vector<uint8_t> coord, char dir, bool main);
+                           vector<vector<uint8_t>> *basinGrid,
+                           vector<uint8_t> coord, char dir, bool main);
 
 /******************************************************************************/
 /* MAIN */
@@ -172,16 +173,17 @@ static uint64_t scanBasin(vector<vector<uint8_t>> *vecGrid,
     vector<vector<uint8_t>> basinGrid((*vecGrid).size(), vector<uint8_t>((*vecGrid)[0].size(), 0));
     uint64_t sizeCount = 0;
 
-    raiseDirection(&basinGrid, (*coord), 'u', true);
-    raiseDirection(&basinGrid, (*coord), 'd', true);
-    raiseDirection(&basinGrid, (*coord), 'l', true);
-    raiseDirection(&basinGrid, (*coord), 'r', true);
+    raiseDirection(vecGrid, &basinGrid, (*coord), 'u', true);
+    raiseDirection(vecGrid, &basinGrid, (*coord), 'd', true);
+    raiseDirection(vecGrid, &basinGrid, (*coord), 'l', true);
+    raiseDirection(vecGrid, &basinGrid, (*coord), 'r', true);
 
     return sizeCount;
 }
 
 static void raiseDirection(vector<vector<uint8_t>> *vecGrid,
-                               vector<uint8_t> coord, char dir, bool main)
+                           vector<vector<uint8_t>> *basinGrid,
+                           vector<uint8_t> coord, char dir, bool main)
 {
     uint8_t x = coord[0];
     uint8_t y = coord[1];
@@ -218,15 +220,19 @@ static void raiseDirection(vector<vector<uint8_t>> *vecGrid,
     }
 
     uint64_t count = 0;
-    while ((*vecGrid)[x][y] != 9 && x > 0 && y > 0 &&
-           x < (*vecGrid).size() && y < (*vecGrid)[x].size())
+    while ((*vecGrid)[x][y] != 9)
     {
         (*vecGrid)[x][y]++;
         (*p_inc) += inc;
         if (main)
         {
-            raiseDirection(vecGrid, {x, y}, dir1, false);
-            raiseDirection(vecGrid, {x, y}, dir2, false);
+            raiseDirection(vecGrid, basinGrid, {x, y}, dir1, false);
+            raiseDirection(vecGrid, basinGrid, {x, y}, dir2, false);
+        }
+        if (x >= 0 || y >= 0 ||
+            x < (*vecGrid).size() || y < (*vecGrid)[x].size())
+        {
+            break;
         }
     }
     return;
