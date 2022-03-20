@@ -185,7 +185,7 @@ static void raiseDirection(vector<vector<uint8_t>> *vecGrid,
 {
     uint8_t x = coord[0];
     uint8_t y = coord[1];
-    uint8_t inc = 0;
+    int8_t inc = 0;
     uint8_t *p_inc;
     char dir1, dir2;
 
@@ -218,7 +218,6 @@ static void raiseDirection(vector<vector<uint8_t>> *vecGrid,
     }
 
     uint64_t count = 0;
-    (*p_inc) += inc;
     while ((*vecGrid)[x][y] != 9 && x > 0 && y > 0 &&
            x < (*vecGrid).size() && y < (*vecGrid)[x].size())
     {
