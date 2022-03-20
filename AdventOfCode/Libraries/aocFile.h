@@ -14,6 +14,7 @@
 /******************************************************************************/
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 /******************************************************************************/
 /* FUNCTIONS */
@@ -37,5 +38,12 @@ int loadFile(std::ifstream &filestream);
  *  @param      filestr modify string pointer
  */
 int loadFile(std::ifstream &filestream, std::string *filestr);
+
+/*!
+ *  @brief      get a vector of strings from each line of a filestream
+ *  @param      filestream file to access
+ *  @param      vecStr modify vector<string> pointer
+ */
+void getStrVec(std::ifstream &filestream, std::vector<std::string> *vecStr);
 
 #endif

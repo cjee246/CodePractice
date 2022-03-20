@@ -62,3 +62,15 @@ int loadFile(ifstream &filestream, string *filestr)
     *filestr = inputName;
     return 0;
 }
+
+void getStrVec(ifstream &filestream, vector<string> *vecStr)
+{
+    string substr;
+    while (getline(filestream, substr))
+    {
+        if (substr.size() > 0)
+        {
+            (*vecStr).push_back(substr);
+        }
+    }
+}
