@@ -27,6 +27,7 @@ using namespace std;
 
 static vector<char> vecOpen = {'(', '[', '{', '<'};
 static vector<char> vecClose = {')', ']', '}', '>'};
+static vector<uint64_t> vecScore = {3, 57, 1197, 25137};
 
 /******************************************************************************/
 /* FUNCTION DECLARATIONS */
@@ -56,10 +57,27 @@ int main()
         vecErr.push_back(checkSyntax(str));
     }
 
-    // parse brackets
+    // final count and score
+    vector<char>::iterator it;
+    vector<uint16_t> count(4, 0);
+    uint8_t idx;
+    uint64_t score = 0;
+    for (auto &ch : vecErr)
+    {
+        if (ch != ' ')
+        {
+            it = find(vecClose.begin(), vecClose.end(), ch);
+            idx = it - vecClose.begin();
+            count[idx]++;
+        }
+    }
+    for (uint8_t i = 0; i < count.size(); i++)
+    {
+        score += count[i] * vecScore[i];
+    }
 
     // print and exit
-    cout << '\n';
+    cout << score << '\n';
     fileInput.close();
     return 0;
 }
@@ -72,7 +90,7 @@ static char checkSyntax(string line)
     stringstream strStream;
     vector<char> vecTrack;
     char c_return;
-    
+
     for (uint16_t i = 0; i < line.size(); i++)
     {
         c_return = line.at(i);
