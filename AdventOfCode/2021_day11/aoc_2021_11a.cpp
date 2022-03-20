@@ -29,7 +29,7 @@ using namespace std;
 /* FUNCTION DECLARATIONS */
 /******************************************************************************/
 static void doStep(vector<vector<uint8_t>> *pGrid,
-                   vector<vector<uint8_t>> *pExcite,
+                   vector<vector<uint8_t>> exciteIn,
                    vector<vector<uint8_t>> *pFlash,
                    uint64_t &flashCount);
 static void incAdj(vector<vector<uint8_t>> *pGrid, uint8_t x, uint8_t y);
@@ -81,7 +81,7 @@ int main()
         {
             fill(vec.begin(), vec.end(), 1);
         }
-        doStep(&vecGrid, &excGrid, &flashGrid, stepCount);
+        doStep(&vecGrid, excGrid, &flashGrid, stepCount);
         totalCount += stepCount;
     }
 
@@ -95,37 +95,38 @@ int main()
 /* FUNCTION DEFINITIONS */
 /******************************************************************************/
 static void doStep(vector<vector<uint8_t>> *pGrid,
-                   vector<vector<uint8_t>> *pExcite,
+                   vector<vector<uint8_t>> exciteIn,
                    vector<vector<uint8_t>> *pFlash,
                    uint64_t &flashCount)
 {
     // excite grid
+    vector<vector<uint8_t>> exciteOut(exciteIn.size(),
+                                      vector<uint8_t>(exciteIn[0].size(), 0));
     for (uint16_t i = 0; i < (*pGrid).size(); i++)
     {
         for (uint16_t j = 0; j < (*pGrid)[i].size(); j++)
         {
-            (*pGrid)[i][j] += (*pExcite)[i][j];
-            (*pExcite)[i][j] = 0;
-            if ((*pGrid)[i][j] >= 9)
+            (*pGrid)[i][j] += exciteIn[i][j];
+            if ((*pGrid)[i][j] > 9)
             {
                 if ((*pFlash)[i][j] == 0)
                 {
                     (*pFlash)[i][j]++;
                     flashCount++;
-                    incAdj(pExcite, i, j);
+                    incAdj(&exciteOut, i, j);
                 }
             }
         }
     }
 
     // do excitations
-    for (auto &vec : (*pExcite))
+    for (auto &vec : (exciteOut))
     {
         if (!all_of(vec.begin(), vec.end(),
                     [](uint64_t n)
                     { return n == 0; }))
         {
-            doStep(pGrid, pExcite, pFlash, flashCount);
+            doStep(pGrid, exciteOut, pFlash, flashCount);
             break;
         }
     }
