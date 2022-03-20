@@ -54,9 +54,26 @@ int main()
     vector<vector<uint8_t>> excGrid(vecGrid.size(), vector<uint8_t>(vecGrid[0].size(), 0));
     vector<vector<uint8_t>> flashGrid = excGrid;
 
+    /*
+    plan
+    - maps
+        1) current grid
+        2) excitation grid
+        3) flash grid
+    - loop
+        - increase a thing
+        - if > 9, update excitation grid for all adjacents
+            - ++ for flash grid
+        - do for all things
+        - count flash grid
+            - if more non-zeroes than before redo loop with excitation
+        - add excitation grid values
+            - reset excitation grid
+    */
+
     // do stuff
     bool update = true;
-    uint64_t totalCount = 0, sync = 0;
+    uint64_t totalCount = 0;
     for (uint16_t i = 0; i < MAX; i++)
     {
         uint64_t stepCount = 0;
@@ -66,15 +83,10 @@ int main()
         }
         doStep(&vecGrid, excGrid, &flashGrid, stepCount);
         totalCount += stepCount;
-        if (stepCount == flashGrid.size() * flashGrid[0].size())
-        {
-            sync = i + 1;
-            break;
-        }
     }
 
     // print and exit
-    cout << sync << '\n';
+    cout << totalCount << '\n';
     fileInput.close();
     return 0;
 }
@@ -115,7 +127,7 @@ static void doStep(vector<vector<uint8_t>> *pGrid,
                     { return n == 0; }))
         {
             doStep(pGrid, exciteOut, pFlash, flashCount);
-            return;
+            break;
         }
     }
 
