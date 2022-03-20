@@ -74,3 +74,23 @@ void getStrVec(ifstream &filestream, vector<string> *vecStr)
         }
     }
 }
+
+void getGrid(ifstream &filestream, vector<vector<uint8_t>> *vecGrid)
+{
+    char fileChar;
+    uint64_t row = 0;
+    (*vecGrid).push_back(vector<uint8_t>());
+    while (filestream.get(fileChar))
+    {
+        if (isdigit(fileChar))
+        {
+            (*vecGrid)[row].push_back(stoi(&fileChar));
+        }
+        else
+        {
+            row++;
+            (*vecGrid).push_back(vector<uint8_t>());
+        }
+    }
+    (*vecGrid).pop_back();
+}

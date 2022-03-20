@@ -46,4 +46,11 @@ int loadFile(std::ifstream &filestream, std::string *filestr);
  */
 void getStrVec(std::ifstream &filestream, std::vector<std::string> *vecStr);
 
+/*!
+ *  @brief      get a 2D grid vector of uint8_t from a filestream
+ *  @param      filestream file to access
+ *  @param      vecGrid modify vector<vector<uint8_t>> pointer
+ */
+void getGrid(std::ifstream &fileStream, std::vector<std::vector<uint8_t>> *vecGrid);
+
 #endif
