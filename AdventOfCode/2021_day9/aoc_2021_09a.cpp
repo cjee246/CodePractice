@@ -32,10 +32,10 @@ static void scanX(vector<vector<uint8_t>> *vecGrid,
                   vector<vector<uint8_t>> *vecCoords);
 static void scanY(vector<vector<uint8_t>> *vecGrid,
                   vector<vector<uint8_t>> *vecCoords);
-static void scanBasin(vector<vector<uint8_t>> *vecGrid,
-                      vector<vector<uint8_t>> *vecCoords);
-static uint64_t countUp(vector<vector<uint8_t>> *vecGrid,
-                        vector<uint8_t> coord);
+static uint64_t scanBasin(vector<vector<uint8_t>> *vecGrid,
+                          vector<uint8_t> *coord);
+static void raiseDirection(vector<vector<uint8_t>> *vecGrid,
+                               vector<uint8_t> coord, char dir, bool main);
 
 /******************************************************************************/
 /* MAIN */
@@ -66,8 +66,12 @@ int main()
         risk += (uint64_t)grid[coord[0]][coord[1]];
     }
 
-    // scan basin
-    scanBasin(&grid, &coords);
+    // get basin height maps
+    vector<uint64_t> basinSize;
+    for (auto &coord : coords)
+    {
+        basinSize.push_back(scanBasin(&grid, &coord));
+    }
 
     // print and exit
     cout << risk << '\n';
@@ -162,46 +166,69 @@ static void scanY(vector<vector<uint8_t>> *vecGrid,
     }
 }
 
-static void scanBasin(vector<vector<uint8_t>> *vecGrid,
-                      vector<vector<uint8_t>> *vecCoords)
+static uint64_t scanBasin(vector<vector<uint8_t>> *vecGrid,
+                          vector<uint8_t> *coord)
 {
-    for (auto &coord : (*vecCoords))
-    {
-        uint64_t x = coord[0];
-        uint64_t y = coord[1];
-        uint64_t i = 0, j = 0;
+    vector<vector<uint8_t>> basinGrid((*vecGrid).size(), vector<uint8_t>((*vecGrid)[0].size(), 0));
+    uint64_t sizeCount = 0;
 
-        // go up: i--
-        while ((*vecGrid)[coord[x + i]][coord[y]] != 9)
-        {
-            i--;
-            if (x - i < 0)
-            {
-                break;
-            }
-            while ((*vecGrid)[coord[x + i]][coord[y + j]] != 9)
-            {
-            }
-        }
+    raiseDirection(&basinGrid, (*coord), 'u', true);
+    raiseDirection(&basinGrid, (*coord), 'd', true);
+    raiseDirection(&basinGrid, (*coord), 'l', true);
+    raiseDirection(&basinGrid, (*coord), 'r', true);
 
-        // go down: i++
-
-        // go left: j--
-
-        // go right: j++
-    }
+    return sizeCount;
 }
 
-static uint64_t countUp(vector<vector<uint8_t>> *vecGrid,
-                        vector<uint8_t> coord)
+static void raiseDirection(vector<vector<uint8_t>> *vecGrid,
+                               vector<uint8_t> coord, char dir, bool main)
 {
-    int64_t x = coord[0]--;
-    int64_t y = coord[1];
-    uint64_t count = 0;
-    while ((*vecGrid)[x][y] != 9 && x > 0)
+    uint8_t x = coord[0];
+    uint8_t y = coord[1];
+    uint8_t inc = 0;
+    uint8_t *p_inc;
+    char dir1, dir2;
+
+    switch (dir)
     {
-        count++;
-        x++;
+    case 'u':
+        p_inc = &x;
+        inc = -1;
+        dir1 = 'l';
+        dir2 = 'r';
+        break;
+    case 'd':
+        p_inc = &x;
+        inc = +1;
+        dir1 = 'l';
+        dir2 = 'r';
+        break;
+    case 'l':
+        p_inc = &y;
+        inc = -1;
+        dir1 = 'u';
+        dir2 = 'd';
+        break;
+    case 'r':
+        p_inc = &y;
+        inc = +1;
+        dir1 = 'u';
+        dir2 = 'd';
+        break;
     }
-    return count;
+
+    uint64_t count = 0;
+    (*p_inc) += inc;
+    while ((*vecGrid)[x][y] != 9 && x > 0 && y > 0 &&
+           x < (*vecGrid).size() && y < (*vecGrid)[x].size())
+    {
+        (*vecGrid)[x][y]++;
+        (*p_inc) += inc;
+        if (main)
+        {
+            raiseDirection(vecGrid, {x, y}, dir1, false);
+            raiseDirection(vecGrid, {x, y}, dir2, false);
+        }
+    }
+    return;
 }
