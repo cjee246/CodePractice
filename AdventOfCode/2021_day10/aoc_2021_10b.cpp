@@ -70,7 +70,6 @@ int main()
     vector<uint64_t> vecPoints(vecCorrect.size(), 0);
     vector<char>::iterator it;
     uint8_t idx;
-    vecCorrect[0] = "<{([";
     for (uint8_t i = 0; i < vecPoints.size(); i++)
     {
         for (int8_t j = vecCorrect[i].size() - 1; j >= 0; j--)
@@ -81,7 +80,13 @@ int main()
             vecPoints[i] += vecScore[idx];
         }
     }
-    uint64_t score = 0;
+    sort(vecPoints.begin(), vecPoints.end());
+    while (vecPoints.size() > 1)
+    {
+        vecPoints.erase(vecPoints.begin());
+        vecPoints.pop_back();
+    }
+    uint64_t score = vecPoints[0];
 
     // print and exit
     cout << score << '\n';
