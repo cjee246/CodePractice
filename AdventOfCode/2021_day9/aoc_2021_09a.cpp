@@ -73,9 +73,22 @@ int main()
     {
         basinSize.push_back(scanBasin(&grid, &coord));
     }
+    vector<uint64_t> basinMax(3, 0);
+    for (auto &size : basinSize)
+    {
+        for (uint8_t i = 0; i < basinMax.size(); i++)
+        {
+            if (size > basinMax[i])
+            {
+                basinMax.insert(basinMax.begin() + i, size);
+                basinMax.pop_back();
+                break;
+            }
+        }
+    }
 
     // print and exit
-    cout << risk << '\n';
+    cout << basinMax[0] * basinMax[1] * basinMax[2] << '\n';
     fileInput.close();
     return 0;
 }
@@ -171,13 +184,23 @@ static uint64_t scanBasin(vector<vector<uint8_t>> *vecGrid,
                           vector<uint8_t> *coord)
 {
     vector<vector<uint8_t>> basinGrid((*vecGrid).size(), vector<uint8_t>((*vecGrid)[0].size(), 0));
-    uint64_t sizeCount = 0;
 
     raiseDirection(vecGrid, &basinGrid, (*coord), 'u', true);
     raiseDirection(vecGrid, &basinGrid, (*coord), 'd', true);
     raiseDirection(vecGrid, &basinGrid, (*coord), 'l', true);
     raiseDirection(vecGrid, &basinGrid, (*coord), 'r', true);
 
+    uint64_t sizeCount = 0;
+    for (auto &row : basinGrid)
+    {
+        for (auto &height : row)
+        {
+            if (height > 0)
+            {
+                sizeCount++;
+            }
+        }
+    }
     return sizeCount;
 }
 
@@ -185,10 +208,10 @@ static void raiseDirection(vector<vector<uint8_t>> *vecGrid,
                            vector<vector<uint8_t>> *basinGrid,
                            vector<uint8_t> coord, char dir, bool main)
 {
-    uint8_t x = coord[0];
-    uint8_t y = coord[1];
+    int8_t x = coord[0];
+    int8_t y = coord[1];
     int8_t inc = 0;
-    uint8_t *p_inc;
+    int8_t *p_inc;
     char dir1, dir2;
 
     switch (dir)
@@ -222,17 +245,19 @@ static void raiseDirection(vector<vector<uint8_t>> *vecGrid,
     uint64_t count = 0;
     while ((*vecGrid)[x][y] != 9)
     {
-        (*vecGrid)[x][y]++;
+        (*basinGrid)[x][y]++;
         (*p_inc) += inc;
-        if (main)
-        {
-            raiseDirection(vecGrid, basinGrid, {x, y}, dir1, false);
-            raiseDirection(vecGrid, basinGrid, {x, y}, dir2, false);
-        }
-        if (x >= 0 || y >= 0 ||
-            x < (*vecGrid).size() || y < (*vecGrid)[x].size())
+        if (x < 0 || y < 0 ||
+            x > (*vecGrid).size() || y > (*vecGrid)[x].size())
         {
             break;
+        }
+        if (main)
+        {
+            raiseDirection(vecGrid, basinGrid,
+                           {(uint8_t)x, (uint8_t)y}, dir1, false);
+            raiseDirection(vecGrid, basinGrid,
+                           {(uint8_t)x, (uint8_t)y}, dir2, false);
         }
     }
     return;
