@@ -23,7 +23,7 @@ using namespace std;
 /******************************************************************************/
 /* GLOBAL VARS */
 /******************************************************************************/
-#define STEPS 10U
+#define STEPS 100U
 
 /******************************************************************************/
 /* FUNCTION DECLARATIONS */
@@ -140,7 +140,7 @@ static void doStep(vector<vector<uint8_t>> *pGrid,
     {
         for (auto &elem : vec)
         {
-            if (elem >= 9)
+            if (elem > 9)
             {
                 elem = 0;
             }
