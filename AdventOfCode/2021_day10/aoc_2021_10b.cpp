@@ -27,7 +27,7 @@ using namespace std;
 
 static vector<char> vecOpen = {'(', '[', '{', '<'};
 static vector<char> vecClose = {')', ']', '}', '>'};
-static vector<uint64_t> vecScore = {3, 57, 1197, 25137};
+static vector<uint64_t> vecScore = {1, 2, 3, 4};
 
 /******************************************************************************/
 /* FUNCTION DECLARATIONS */
@@ -68,12 +68,21 @@ int main()
 
     // final count and score
     vector<uint64_t> vecPoints(vecCorrect.size(), 0);
+    vector<char>::iterator it;
+    uint8_t idx;
+    vecCorrect[0] = "<{([";
     for (uint8_t i = 0; i < vecPoints.size(); i++)
     {
-
+        for (int8_t j = vecCorrect[i].size() - 1; j >= 0; j--)
+        {
+            vecPoints[i] *= 5;
+            it = find(vecOpen.begin(), vecOpen.end(), vecCorrect[i].at(j));
+            idx = it - vecOpen.begin();
+            vecPoints[i] += vecScore[idx];
+        }
     }
     uint64_t score = 0;
-    
+
     // print and exit
     cout << score << '\n';
     fileInput.close();
