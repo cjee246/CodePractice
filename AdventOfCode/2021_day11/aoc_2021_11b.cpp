@@ -2,7 +2,7 @@
  * Author: Calvin Jee
  * Email: cjee246@gmail.com
  *
- * Date: Date: 2021-03-20
+ * Date: 2021-03-20
  */
 
 /******************************************************************************/
@@ -16,9 +16,10 @@
 #include <algorithm>
 #include <numeric>
 #include <cmath>
-#include "../Libraries/aocFile.h"
+#include "../Libraries/aocLib_v02.h"
 
 using namespace std;
+using namespace aocLib_v02;
 
 /******************************************************************************/
 /* GLOBAL VARS */
@@ -28,11 +29,11 @@ using namespace std;
 /******************************************************************************/
 /* FUNCTION DECLARATIONS */
 /******************************************************************************/
-static void doStep(vector<vector<uint8_t>> *pGrid,
+static void doStep(vector<vector<uint8_t>> &rGrid,
                    vector<vector<uint8_t>> exciteIn,
-                   vector<vector<uint8_t>> *pFlash,
-                   uint64_t &flashCount);
-static void incAdj(vector<vector<uint8_t>> *pGrid, uint8_t x, uint8_t y);
+                   vector<vector<uint8_t>> &rFlash,
+                   uint64_t &rFlashCount);
+static void incAdj(vector<vector<uint8_t>> &rGrid, uint8_t x, uint8_t y);
 
 /******************************************************************************/
 /* MAIN */
@@ -50,30 +51,13 @@ int main()
 
     // initialize grids
     vector<vector<uint8_t>> vecGrid;
-    getGrid(fileInput, &vecGrid);
+    getGrid(fileInput, vecGrid);
     vector<vector<uint8_t>> excGrid(vecGrid.size(), vector<uint8_t>(vecGrid[0].size(), 0));
     vector<vector<uint8_t>> flashGrid = excGrid;
 
-    /*
-    plan
-    - maps
-        1) current grid
-        2) excitation grid
-        3) flash grid
-    - loop
-        - increase a thing
-        - if > 9, update excitation grid for all adjacents
-            - ++ for flash grid
-        - do for all things
-        - count flash grid
-            - if more non-zeroes than before redo loop with excitation
-        - add excitation grid values
-            - reset excitation grid
-    */
-
     // do stuff
     bool update = true;
-    uint64_t totalCount = 0;
+    uint64_t totalCount = 0, sync = 0;
     for (uint16_t i = 0; i < MAX; i++)
     {
         uint64_t stepCount = 0;
@@ -81,12 +65,17 @@ int main()
         {
             fill(vec.begin(), vec.end(), 1);
         }
-        doStep(&vecGrid, excGrid, &flashGrid, stepCount);
+        doStep(vecGrid, excGrid, flashGrid, stepCount);
         totalCount += stepCount;
+        if (stepCount == flashGrid.size() * flashGrid[0].size())
+        {
+            sync = i + 1;
+            break;
+        }
     }
 
     // print and exit
-    cout << totalCount << '\n';
+    cout << sync << '\n';
     fileInput.close();
     return 0;
 }
@@ -94,26 +83,26 @@ int main()
 /******************************************************************************/
 /* FUNCTION DEFINITIONS */
 /******************************************************************************/
-static void doStep(vector<vector<uint8_t>> *pGrid,
+static void doStep(vector<vector<uint8_t>> &rGrid,
                    vector<vector<uint8_t>> exciteIn,
-                   vector<vector<uint8_t>> *pFlash,
-                   uint64_t &flashCount)
+                   vector<vector<uint8_t>> &rFlash,
+                   uint64_t &rFlashCount)
 {
     // excite grid
     vector<vector<uint8_t>> exciteOut(exciteIn.size(),
                                       vector<uint8_t>(exciteIn[0].size(), 0));
-    for (uint16_t i = 0; i < (*pGrid).size(); i++)
+    for (uint16_t i = 0; i < rGrid.size(); i++)
     {
-        for (uint16_t j = 0; j < (*pGrid)[i].size(); j++)
+        for (uint16_t j = 0; j < rGrid[i].size(); j++)
         {
-            (*pGrid)[i][j] += exciteIn[i][j];
-            if ((*pGrid)[i][j] > 9)
+            rGrid[i][j] += exciteIn[i][j];
+            if (rGrid[i][j] > 9)
             {
-                if ((*pFlash)[i][j] == 0)
+                if (rFlash[i][j] == 0)
                 {
-                    (*pFlash)[i][j]++;
-                    flashCount++;
-                    incAdj(&exciteOut, i, j);
+                    rFlash[i][j]++;
+                    rFlashCount++;
+                    incAdj(exciteOut, i, j);
                 }
             }
         }
@@ -126,17 +115,17 @@ static void doStep(vector<vector<uint8_t>> *pGrid,
                     [](uint64_t n)
                     { return n == 0; }))
         {
-            doStep(pGrid, exciteOut, pFlash, flashCount);
+            doStep(rGrid, exciteOut, rFlash, rFlashCount);
             break;
         }
     }
 
     // reset flash and grid
-    for (auto &vec : (*pFlash))
+    for (auto &vec : rFlash)
     {
         fill(vec.begin(), vec.end(), 0);
     }
-    for (auto &vec : (*pGrid))
+    for (auto &vec : rGrid)
     {
         for (auto &elem : vec)
         {
@@ -148,10 +137,10 @@ static void doStep(vector<vector<uint8_t>> *pGrid,
     }
 }
 
-static void incAdj(vector<vector<uint8_t>> *pGrid, uint8_t x, uint8_t y)
+static void incAdj(vector<vector<uint8_t>> &rGrid, uint8_t x, uint8_t y)
 {
-    uint16_t xMax = (*pGrid).size();
-    uint16_t yMax = (*pGrid)[x].size();
+    uint16_t xMax = rGrid.size();
+    uint16_t yMax = rGrid[x].size();
     for (int8_t i = -1; i <= 1; i++)
     {
         if (x + i >= 0 && (int16_t)x + i < xMax)
@@ -160,7 +149,7 @@ static void incAdj(vector<vector<uint8_t>> *pGrid, uint8_t x, uint8_t y)
             {
                 if (y + j >= 0 && (int16_t)y + j < yMax)
                 {
-                    (*pGrid)[x + i][y + j]++;
+                    rGrid[x + i][y + j]++;
                 }
             }
         }
