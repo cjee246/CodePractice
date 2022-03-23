@@ -25,11 +25,16 @@ using namespace aocLib_v02;
 /* GLOBAL VARS */
 /******************************************************************************/
 #define VAR 0
+static uint8_t startIdx, endIdx;
+static uint16_t pathCount = 0;
 
 /******************************************************************************/
 /* FUNCTION DECLARATIONS */
 /******************************************************************************/
-static void FindCaves(string line, vector<string> &caves);
+static void ParsePath(string line, vector<string> &rCaves,
+                      vector<vector<string>> &rNodes);
+static uint8_t CheckCaves(string cave, vector<string> &rCaves,
+                          vector<vector<string>> &rNodes);
 
 /******************************************************************************/
 /* MAIN */
@@ -45,27 +50,30 @@ int main()
         return 0;
     }
 
-    // get string pairs
-    vector<string> vecLines;
-    getStrVec(fileInput, vecLines);
-
-    // build vector of caves
-    vector<string> vecCaves;
-    for (auto &str : vecLines)
-    {
-        FindCaves(str, vecCaves);
-    }
-
     /*
     Plan
     - save all stations in a vector
     - save all adjacents in another vector
     - save all "small caves" in a vector
     - from start, do "get all adjacent paths"
-        - recursive that returns true when all paths explored 
+        - recursive that returns true when all paths explored
         - increases count when reaches end
         - also removes small cave indices whenever one is left
     */
+
+    // get string pairs
+    vector<string> vecLines;
+    getStrVec(fileInput, vecLines);
+
+    // build vector of caves
+    vector<string> vecCaves;
+    vector<vector<string>> vecNodes;
+    for (auto &str : vecLines)
+    {
+        ParsePath(str, vecCaves, vecNodes);
+    }
+
+    //
 
     // print and exit
     cout << '\n';
@@ -76,22 +84,46 @@ int main()
 /******************************************************************************/
 /* FUNCTION DEFINITIONS */
 /******************************************************************************/
-static void FindCaves(string line, vector<string> &caves)
+static void ParsePath(string line, vector<string> &rCaves,
+                      vector<vector<string>> &rNodes)
 {
-        string first, last;
-        vector<string>::iterator it;
+    string node1, node2;
+    uint8_t idx1, idx2;
+    vector<string>::iterator it;
 
-        first = line.substr(0, line.find('-'));
-        it = find(caves.begin(), caves.end(), first);
-        if (it == caves.end())
-        {
-            caves.push_back(first);
-        }
+    node1 = line.substr(0, line.find('-'));
+    idx1 = CheckCaves(node1, rCaves, rNodes);
+    node2 = line.substr(line.find('-') + 1, line.size());
+    idx2 = CheckCaves(node2, rCaves, rNodes);
 
-        last = line.substr(line.find('-') + 1, line.size());
-        it = find(caves.begin(), caves.end(), last);
-        if (it == caves.end())
+    rNodes[idx1].push_back(node2);
+    rNodes[idx2].push_back(node1);
+}
+
+static uint8_t CheckCaves(string cave, vector<string> &rCaves,
+                          vector<vector<string>> &rNodes)
+{
+    uint8_t idx;
+    vector<string>::iterator it;
+    it = find(rCaves.begin(), rCaves.end(), cave);
+    if (it == rCaves.end())
+    {
+        rCaves.push_back(cave);
+        it = rCaves.end() - 1;
+        rNodes.push_back(vector<string>());
+        idx = it - rCaves.begin();
+        if (cave == "start")
         {
-            caves.push_back(last);
+            startIdx = idx;
         }
+        else if (cave == "end")
+        {
+            endIdx = idx;
+        }
+    }
+    else
+    {
+        idx = it - rCaves.begin();
+    }
+    return idx;
 }
