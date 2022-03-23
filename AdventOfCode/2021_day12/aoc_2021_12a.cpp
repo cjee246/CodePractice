@@ -24,7 +24,7 @@ using namespace aocLib_v02;
 /******************************************************************************/
 /* GLOBAL VARS */
 /******************************************************************************/
-#define VAR 
+#define VAR
 static uint8_t startIdx, endIdx;
 static uint16_t pathCount;
 
@@ -141,26 +141,22 @@ static void FindAllPaths(vector<string> &caves, vector<vector<string>> nodes,
     if (currCave == "end")
     {
         pathCount++;
-        //cout << out << '\n';
+        cout << out << '\n';
         return;
     }
     out += ", ";
-    for (auto &nextCave : nodes[idx])
+    for (uint8_t i = 0; i < nodes[idx].size(); i++)
     {
         string currCave = caves[idx];
-        uint8_t next = CheckCaves(nextCave, caves, nodes);
-        if (islower(currCave[0]))
+        uint8_t next = CheckCaves(nodes[idx][i], caves, nodes);
+        string nextCave = caves[next];
+        if (tracker[next] <= 0)
         {
-            /* for (auto &vec : nodes)
+            if (islower(currCave[0]))
             {
-                vec.erase(remove(vec.begin(), vec.end(), currCave), vec.end());
-            } */
+                tracker[idx]++;
+            }
+            FindAllPaths(caves, nodes, next, tracker, out);
         }
-        if (currCave == "end")
-        {
-            pathCount++;
-            break;
-        }
-        FindAllPaths(caves, nodes, next, tracker, out);
     }
 }
