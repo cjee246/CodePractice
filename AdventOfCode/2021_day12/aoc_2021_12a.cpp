@@ -80,7 +80,7 @@ int main()
     //
 
     // print and exit
-    cout << '\n';
+    cout << pathCount << '\n';
     fileInput.close();
     return 0;
 }
@@ -139,7 +139,7 @@ static void FindAllPaths(vector<string> &caves, vector<vector<string>> nodes,
     {
         string currCave = caves[idx];
         uint8_t next = CheckCaves(str, caves, nodes);
-        if (next == endIdx)
+        if (currCave == "end")
         {
             pathCount++;
             break;
