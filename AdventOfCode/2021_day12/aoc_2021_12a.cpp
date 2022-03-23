@@ -26,7 +26,7 @@ using namespace aocLib_v02;
 /******************************************************************************/
 #define VAR 0
 static uint8_t startIdx, endIdx;
-static uint16_t pathCount = 0;
+static uint16_t pathCount;
 
 /******************************************************************************/
 /* FUNCTION DECLARATIONS */
@@ -35,6 +35,8 @@ static void ParsePath(string line, vector<string> &rCaves,
                       vector<vector<string>> &rNodes);
 static uint8_t CheckCaves(string cave, vector<string> &rCaves,
                           vector<vector<string>> &rNodes);
+static void FindAllPaths(vector<string> &caves, vector<vector<string>> nodes,
+                         uint8_t idx);
 
 /******************************************************************************/
 /* MAIN */
@@ -72,6 +74,8 @@ int main()
     {
         ParsePath(str, vecCaves, vecNodes);
     }
+    pathCount = 0;
+    FindAllPaths(vecCaves, vecNodes, startIdx);
 
     //
 
@@ -126,4 +130,27 @@ static uint8_t CheckCaves(string cave, vector<string> &rCaves,
         idx = it - rCaves.begin();
     }
     return idx;
+}
+
+static void FindAllPaths(vector<string> &caves, vector<vector<string>> nodes,
+                         uint8_t idx)
+{
+    for (auto &str : nodes[idx])
+    {
+        string currCave = caves[idx];
+        uint8_t next = CheckCaves(str, caves, nodes);
+        if (next == endIdx)
+        {
+            pathCount++;
+            break;
+        }
+        if (islower(currCave[0]))
+        {
+            for (auto &vec : nodes)
+            {
+                vec.erase(remove(vec.begin(), vec.end(), currCave), vec.end());
+            }
+        }
+        FindAllPaths(caves, nodes, next);
+    }
 }
