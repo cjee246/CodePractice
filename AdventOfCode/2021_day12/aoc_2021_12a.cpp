@@ -36,7 +36,7 @@ static void ParsePath(string line, vector<string> &rCaves,
 static uint8_t CheckCaves(string cave, vector<string> &rCaves,
                           vector<vector<string>> &rNodes);
 static void FindAllPaths(vector<string> &caves, vector<vector<string>> nodes,
-                         uint8_t idx, string out);
+                         uint8_t idx, vector<uint8_t> tracker, string out);
 
 /******************************************************************************/
 /* MAIN */
@@ -75,7 +75,8 @@ int main()
         ParsePath(str, vecCaves, vecNodes);
     }
     pathCount = 0;
-    FindAllPaths(vecCaves, vecNodes, startIdx, "");
+    vector<uint8_t> vecTracker(vecCaves.size(), 0);
+    FindAllPaths(vecCaves, vecNodes, startIdx, vecTracker, "");
 
     //
 
@@ -133,7 +134,7 @@ static uint8_t CheckCaves(string cave, vector<string> &rCaves,
 }
 
 static void FindAllPaths(vector<string> &caves, vector<vector<string>> nodes,
-                         uint8_t idx, string out)
+                         uint8_t idx, vector<uint8_t> tracker, string out)
 {
     string currCave = caves[idx];
     out += currCave;
@@ -150,11 +151,16 @@ static void FindAllPaths(vector<string> &caves, vector<vector<string>> nodes,
         uint8_t next = CheckCaves(nextCave, caves, nodes);
         if (islower(currCave[0]))
         {
-            for (auto &vec : nodes)
+            /* for (auto &vec : nodes)
             {
                 vec.erase(remove(vec.begin(), vec.end(), currCave), vec.end());
-            }
+            } */
         }
-        FindAllPaths(caves, nodes, next, out);
+        if (currCave == "end")
+        {
+            pathCount++;
+            break;
+        }
+        FindAllPaths(caves, nodes, next, tracker, out);
     }
 }
