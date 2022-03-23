@@ -24,7 +24,7 @@ using namespace aocLib_v02;
 /******************************************************************************/
 /* GLOBAL VARS */
 /******************************************************************************/
-#define VAR 0
+#define VAR 
 static uint8_t startIdx, endIdx;
 static uint16_t pathCount;
 
@@ -36,7 +36,7 @@ static void ParsePath(string line, vector<string> &rCaves,
 static uint8_t CheckCaves(string cave, vector<string> &rCaves,
                           vector<vector<string>> &rNodes);
 static void FindAllPaths(vector<string> &caves, vector<vector<string>> nodes,
-                         uint8_t idx);
+                         uint8_t idx, string out);
 
 /******************************************************************************/
 /* MAIN */
@@ -75,7 +75,7 @@ int main()
         ParsePath(str, vecCaves, vecNodes);
     }
     pathCount = 0;
-    FindAllPaths(vecCaves, vecNodes, startIdx);
+    FindAllPaths(vecCaves, vecNodes, startIdx, "");
 
     //
 
@@ -133,17 +133,21 @@ static uint8_t CheckCaves(string cave, vector<string> &rCaves,
 }
 
 static void FindAllPaths(vector<string> &caves, vector<vector<string>> nodes,
-                         uint8_t idx)
+                         uint8_t idx, string out)
 {
-    for (auto &str : nodes[idx])
+    string currCave = caves[idx];
+    out += currCave;
+    if (currCave == "end")
+    {
+        pathCount++;
+        //cout << out << '\n';
+        return;
+    }
+    out += ", ";
+    for (auto &nextCave : nodes[idx])
     {
         string currCave = caves[idx];
-        uint8_t next = CheckCaves(str, caves, nodes);
-        if (currCave == "end")
-        {
-            pathCount++;
-            break;
-        }
+        uint8_t next = CheckCaves(nextCave, caves, nodes);
         if (islower(currCave[0]))
         {
             for (auto &vec : nodes)
@@ -151,6 +155,6 @@ static void FindAllPaths(vector<string> &caves, vector<vector<string>> nodes,
                 vec.erase(remove(vec.begin(), vec.end(), currCave), vec.end());
             }
         }
-        FindAllPaths(caves, nodes, next);
+        FindAllPaths(caves, nodes, next, out);
     }
 }
