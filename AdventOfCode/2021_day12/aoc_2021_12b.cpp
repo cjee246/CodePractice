@@ -26,9 +26,8 @@ using namespace aocLib_v02;
 /******************************************************************************/
 #define VAR
 static uint8_t startIdx, endIdx;
-static uint16_t pathCount;
+static uint32_t pathCount;
 static vector<uint8_t> vecSmall;
-static vector<uint8_t> vecMax;
 
 /******************************************************************************/
 /* FUNCTION DECLARATIONS */
@@ -38,8 +37,8 @@ static void ParsePath(string line, vector<string> &rCaves,
 static uint8_t CheckCaves(string cave, vector<string> &rCaves,
                           vector<vector<string>> &rNodes);
 static void FindAllPaths(vector<string> &caves, vector<vector<string>> nodes,
-                         uint8_t idx, uint8_t bonus,
-                         vector<uint8_t> tracker, string out);
+                         uint8_t idx, vector<uint8_t> max,
+                         vector<uint8_t> track, string out);
 
 /******************************************************************************/
 /* MAIN */
@@ -79,7 +78,7 @@ int main()
     }
 
     // get small caves vector
-    vecMax = vector<uint8_t>(vecCaves.size(), 0);
+    vector<uint8_t> vecMax = vector<uint8_t>(vecCaves.size(), 0);
     for (uint8_t i = 0; i < vecCaves.size(); i++)
     {
         if (islower(vecCaves[i][0]))
@@ -95,7 +94,7 @@ int main()
     // process all pathways
     pathCount = 0;
     vector<uint8_t> vecTracker(vecCaves.size(), 0);
-    FindAllPaths(vecCaves, vecNodes, startIdx, startIdx, vecTracker, "");
+    FindAllPaths(vecCaves, vecNodes, startIdx, vecMax, vecTracker, "");
 
     // print and exit
     cout << pathCount << '\n';
@@ -151,42 +150,49 @@ static uint8_t CheckCaves(string cave, vector<string> &rCaves,
 }
 
 static void FindAllPaths(vector<string> &caves, vector<vector<string>> nodes,
-                         uint8_t idx, uint8_t bonus,
-                         vector<uint8_t> tracker, string out)
+                         uint8_t idx, vector<uint8_t> max,
+                         vector<uint8_t> track, string out)
 {
-    // setting up max
-    vector<uint8_t> max = vecMax;
-    if (bonus != startIdx)
-    {
-        max[bonus]++;
-    }
-    
     // reaching end
     string currCave = caves[idx];
     out += currCave;
     if (currCave == "end")
     {
-        pathCount++;
-        cout << out << '\n';
-        return;
+        vector<uint8_t>::iterator it1 = find(max.begin(), max.end(), 2);
+        vector<uint8_t>::iterator it2 = find(track.begin(), track.end(), 2);
+        if (it1 == max.end() || it2 != track.end())
+        {
+            pathCount++;
+            //cout << out << '\n';
+            return;
+        }
     }
     out += ", ";
 
-    // paths in the middle
-    for (uint8_t j = 0; j < vecSmall.size(); j++)
+    // do sesarch
+    for (uint8_t i = 0; i < nodes[idx].size(); i++)
     {
-        for (uint8_t i = 0; i < nodes[idx].size(); i++)
+        string currCave = caves[idx];
+        uint8_t next = CheckCaves(nodes[idx][i], caves, nodes);
+        string nextCave = caves[next];
+        if (max[next] == 0 || track[next] < max[next])
         {
-            string currCave = caves[idx];
-            uint8_t next = CheckCaves(nodes[idx][i], caves, nodes);
-            string nextCave = caves[next];
-            if (vecMax[next] == 0 || tracker[next] < max[next])
+            if (islower(currCave[0]))
             {
-                if (islower(currCave[0]))
+                track[idx]++;
+                FindAllPaths(caves, nodes, next, max, track, out);
+                if (idx != startIdx && idx != endIdx &&
+                    find(max.begin(), max.end(), 2) == max.end())
                 {
-                    tracker[idx]++;
+                    max[idx]++;
+                    FindAllPaths(caves, nodes, next, max, track, out);
+                    max[idx]--;
                 }
-                FindAllPaths(caves, nodes, next, j, tracker, out);
+                track[idx]--;
+            }
+            else
+            {
+                FindAllPaths(caves, nodes, next, max, track, out);
             }
         }
     }
