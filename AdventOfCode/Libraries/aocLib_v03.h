@@ -61,6 +61,6 @@ namespace aocLib_v03
      *  @param      delim separator (usually ',')
      *  @param      rVecPlot vector to modify with plotted points
      */
-    void PlotVec(std::string &str, char delim, std::vector<std::vector<uint16_t>> &rVecPlot);
+    void PlotVec(std::string &str, char delim, std::vector<std::vector<uint16_t>> &rVecPlot, bool invert);
 }
 #endif

@@ -30,6 +30,7 @@ using namespace aocLib_v03;
 /* FUNCTION DECLARATIONS */
 /******************************************************************************/
 static void func();
+static void GetInstr(string instr, vector<vector<uint16_t>> &rVec);
 
 /******************************************************************************/
 /* MAIN */
@@ -48,18 +49,20 @@ int main()
     // string vector and then grid
     vector<string> vecString;
     vector<vector<uint16_t>> vecPlot;
+    vector<vector<uint16_t>> vecInstr;
     GetStrVec(fileInput, vecString);
     for (uint32_t i = 0; i < vecString.size(); i++)
     {
-        if (vecString[i] == "")
+        if (isalpha(vecString[i][0]))
         {
-            break;
+            GetInstr(vecString[i], vecInstr);
         }
         else
         {
-            PlotVec(vecString[i], ',', vecPlot);
+            PlotVec(vecString[i], ',', vecPlot, false);
         }
     }
+
 
     // print and exit
     cout << '\n';
@@ -70,7 +73,24 @@ int main()
 /******************************************************************************/
 /* FUNCTION DEFINITIONS */
 /******************************************************************************/
-static void func()
+static void GetInstr(string instr, vector<vector<uint16_t>> &rVec)
 {
-
+    stringstream strStream(instr);
+    string axis, valStr;
+    uint16_t val;
+    {
+        getline(strStream, axis, ' ');
+        getline(strStream, axis, ' ');
+        getline(strStream, axis, '=');
+        getline(strStream, valStr);
+        val = stoi(valStr);
+        if (axis == "x")
+        {
+            rVec.push_back({0, val});
+        }
+        else
+        {
+            rVec.push_back({1, val});
+        }
+    }
 }

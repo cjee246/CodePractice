@@ -96,15 +96,23 @@ namespace aocLib_v03
         rVecGrid.pop_back();
     }
 
-    void PlotVec(string &str, char delim, vector<vector<uint16_t>> &rVecPlot)
+    void PlotVec(string &str, char delim, vector<vector<uint16_t>> &rVecPlot, bool invert)
     {
         stringstream strStream(str);
-        string xStr, yStr;
-        uint16_t x, y;
-        getline(strStream, xStr, delim);
-        getline(strStream, yStr);
-        x = stoi(xStr);
-        y = stoi(yStr);
+        string first, last;
+        uint16_t *p1, *p2, x, y;
+        getline(strStream, first, delim);
+        getline(strStream, last);
+        if (invert)
+        {
+            x = stoi(last);
+            y = stoi(first);
+        }
+        else
+        {
+            y = stoi(last);
+            x = stoi(first);
+        }
         if (rVecPlot.size() < x + 1)
         {
             rVecPlot.resize(x + 1);
