@@ -110,8 +110,8 @@ namespace aocLib_v03
         }
         else
         {
-            y = stoi(last);
             x = stoi(first);
+            y = stoi(last);
         }
         if (rVecPlot.size() < x + 1)
         {

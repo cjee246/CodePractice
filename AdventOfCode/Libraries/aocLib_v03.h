@@ -60,6 +60,7 @@ namespace aocLib_v03
      *  @param      str coordinate pair
      *  @param      delim separator (usually ',')
      *  @param      rVecPlot vector to modify with plotted points
+     *  @param      invert true if first value is y and second value is x
      */
     void PlotVec(std::string &str, char delim, std::vector<std::vector<uint16_t>> &rVecPlot, bool invert);
 }
