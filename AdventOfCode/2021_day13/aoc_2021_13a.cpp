@@ -16,10 +16,10 @@
 #include <algorithm>
 #include <numeric>
 #include <cmath>
-#include "../Libraries/aocLib_v02.h"
+#include "../Libraries/aocLib_v03.h"
 
 using namespace std;
-using namespace aocLib_v02;
+using namespace aocLib_v03;
 
 /******************************************************************************/
 /* GLOBAL VARS */
@@ -39,10 +39,18 @@ int main()
     // read file
     std::ios::sync_with_stdio(false);
     ifstream fileInput;
-    if (loadFile(fileInput))
+    if (LoadFile(fileInput))
     {
         fileInput.close();
         return 0;
+    }
+
+    // string vector and then grid
+    vector<string> vecString;
+    GetStrVec(fileInput, vecString);
+    for (auto &str : vecString)
+    {
+
     }
 
     // print and exit
