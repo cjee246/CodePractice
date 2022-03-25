@@ -76,7 +76,10 @@ int main()
     for (uint32_t i = 0; i < vecInstr.size(); i++)
     {
         FoldVec(vecPlot, vecInstr[i]);
-        firstFold = CountDots(vecPlot);
+        if (i == 0)
+        {
+            firstFold = CountDots(vecPlot);
+        }
     }
 
     // print and exit
@@ -153,12 +156,39 @@ static vector<vector<uint16_t>> GetSplitVec(const vector<vector<uint16_t>> &vec,
 
 static void FlipVec(vector<vector<uint16_t>> &rVec, uint8_t dir)
 {
-    
+    if (dir == 0)
+    {
+        for (int16_t i = rVec.size() - 1; i >= 0; i--)
+        {
+            rVec.push_back(rVec[i]);
+            rVec.erase(rVec.begin() + i);
+        }
+    }
+    else
+    {
+        for (auto &yvec : rVec)
+        {
+            for (int16_t i = yvec.size() - 1; i >= 0; i--)
+            {
+
+                yvec.push_back(yvec[i]);
+                yvec.erase(yvec.begin() + i);
+            }
+        }
+    }
 }
 
 static void StackVec(vector<vector<uint16_t>> &rVec1,
                      vector<vector<uint16_t>> &rVec2)
 {
+    for (uint16_t i = 0; i < rVec1.size(); i++)
+    {
+        for (uint16_t j = 0; j < rVec1.size(); j++)
+        {
+            rVec1[i][j] += rVec2[i][j];
+        }
+    }
+    return;
 }
 
 static void FoldVec(vector<vector<uint16_t>> &rVec,
@@ -166,8 +196,10 @@ static void FoldVec(vector<vector<uint16_t>> &rVec,
 {
     vector<vector<uint16_t>> vec1 = GetSplitVec(rVec, rVecInstr[0], rVecInstr[1], true);
     vector<vector<uint16_t>> vec2 = GetSplitVec(rVec, rVecInstr[0], rVecInstr[1], false);
+    rVec.clear();
     FlipVec(vec2, rVecInstr[0]);
     StackVec(vec1, vec2);
+    copy(vec1.begin(), vec1.end(), back_inserter(rVec));
 }
 
 static uint32_t CountDots(const vector<vector<uint16_t>> &rVec)
