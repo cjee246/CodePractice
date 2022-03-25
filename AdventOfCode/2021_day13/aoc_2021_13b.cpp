@@ -31,15 +31,13 @@ using namespace aocLib_v03;
 /******************************************************************************/
 static void func();
 static void GetInstr(string instr, vector<vector<uint16_t>> &rVec);
-static vector<vector<uint16_t>> GetSplitVec(const vector<vector<uint16_t>> &vec,
-                                            uint16_t axisDir,
-                                            uint16_t axisVal,
-                                            bool first);
-static void FlipVec(vector<vector<uint16_t>> &rVec, uint8_t dir);
-static void StackVec(vector<vector<uint16_t>> &rVec1,
-                     vector<vector<uint16_t>> &rVec2);
 static void FoldVec(vector<vector<uint16_t>> &rVec,
                     const vector<uint16_t> &rVecInstr);
+static void SplitFlipVec(vector<vector<uint16_t>> &rVecIn,
+                         vector<vector<uint16_t>> &rVecOut,
+                         const vector<uint16_t> &rVecInstr);
+static void StackVec(vector<vector<uint16_t>> &rVec1,
+                     vector<vector<uint16_t>> &rVec2);
 static uint32_t CountDots(const vector<vector<uint16_t>> &rVec);
 
 /******************************************************************************/
@@ -55,12 +53,12 @@ int main()
         fileInput.close();
         return 0;
     }
-
-    // string vector and then grid
     vector<string> vecString;
+    GetStrVec(fileInput, vecString);
+
+    // Get instructions and plot
     vector<vector<uint16_t>> vecPlot;
     vector<vector<uint16_t>> vecInstr;
-    GetStrVec(fileInput, vecString);
     for (uint32_t i = 0; i < vecString.size(); i++)
     {
         if (isalpha(vecString[i][0]))
@@ -72,6 +70,10 @@ int main()
             PlotVec(vecString[i], ',', vecPlot, false);
         }
     }
+    vecString.clear();
+    vecString.shrink_to_fit();
+
+    // fold vector
     uint32_t firstFold = 0;
     for (uint32_t i = 0; i < vecInstr.size(); i++)
     {
@@ -83,6 +85,7 @@ int main()
     }
 
     // print and exit
+    cout << "\nFirst fold: " << firstFold << "\n\n";
     for (uint8_t i = 0; i < vecPlot[0].size(); i++)
     {
         for (uint8_t j = 0; j < vecPlot.size(); j++)
@@ -127,69 +130,41 @@ static void GetInstr(string instr, vector<vector<uint16_t>> &rVec)
     }
 }
 
-static vector<vector<uint16_t>> GetSplitVec(const vector<vector<uint16_t>> &vec,
-                                            uint16_t axisDir,
-                                            uint16_t axisVal,
-                                            bool first)
+static void FoldVec(vector<vector<uint16_t>> &rVec,
+                    const vector<uint16_t> &rVecInstr)
 {
-    vector<vector<uint16_t>> splitVec = vec;
-    uint16_t start, end;
-    if (axisDir == 0)
-    {
-        for (uint16_t i = 0; i <= axisVal; i++)
-        {
-            if (first)
-            {
-                splitVec.pop_back();
-            }
-            else
-            {
-                splitVec.erase(splitVec.begin());
-            }
-        }
-    }
-    else
-    {
-        for (auto &yvec : splitVec)
-        {
-            for (uint16_t i = 0; i <= axisVal; i++)
-            {
-                if (first)
-                {
-                    yvec.pop_back();
-                }
-                else
-                {
-                    yvec.erase(yvec.begin());
-                }
-            }
-        }
-    }
-    return splitVec;
+    vector<vector<uint16_t>> tempVec;
+    SplitFlipVec(rVec, tempVec, rVecInstr);
+    StackVec(rVec, tempVec);
 }
 
-static void FlipVec(vector<vector<uint16_t>> &rVec, uint8_t dir)
+static void SplitFlipVec(vector<vector<uint16_t>> &rVecIn,
+                         vector<vector<uint16_t>> &rVecOut,
+                         const vector<uint16_t> &rVecInstr)
 {
-    if (dir == 0)
+    if (rVecInstr[0] == 0)
     {
-        for (int16_t i = rVec.size() - 1; i >= 0; i--)
+        for (uint16_t i = 0; i <= rVecInstr[1] - 1; i++)
         {
-            rVec.push_back(rVec[i]);
-            rVec.erase(rVec.begin() + i);
+            rVecOut.push_back(rVecIn.back());
+            rVecIn.pop_back();
         }
+        rVecIn.pop_back();
     }
     else
     {
-        for (auto &yvec : rVec)
+        for (uint16_t i = 0; i < rVecIn.size(); i++)
         {
-            for (int16_t i = yvec.size() - 1; i >= 0; i--)
+            rVecOut.push_back(vector<uint16_t>());
+            for (uint16_t j = 0; j <= rVecInstr[1] - 1; j++)
             {
-
-                yvec.push_back(yvec[i]);
-                yvec.erase(yvec.begin() + i);
+                rVecOut[i].push_back(rVecIn[i].back());
+                rVecIn[i].pop_back();
             }
+            rVecIn[i].pop_back();
         }
     }
+    return;
 }
 
 static void StackVec(vector<vector<uint16_t>> &rVec1,
@@ -203,17 +178,6 @@ static void StackVec(vector<vector<uint16_t>> &rVec1,
         }
     }
     return;
-}
-
-static void FoldVec(vector<vector<uint16_t>> &rVec,
-                    const vector<uint16_t> &rVecInstr)
-{
-    vector<vector<uint16_t>> vec1 = GetSplitVec(rVec, rVecInstr[0], rVecInstr[1], true);
-    vector<vector<uint16_t>> vec2 = GetSplitVec(rVec, rVecInstr[0], rVecInstr[1], false);
-    rVec.clear();
-    FlipVec(vec2, rVecInstr[0]);
-    StackVec(vec1, vec2);
-    copy(vec1.begin(), vec1.end(), back_inserter(rVec));
 }
 
 static uint32_t CountDots(const vector<vector<uint16_t>> &rVec)
