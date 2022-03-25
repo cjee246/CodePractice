@@ -47,10 +47,18 @@ int main()
 
     // string vector and then grid
     vector<string> vecString;
+    vector<vector<uint16_t>> vecPlot;
     GetStrVec(fileInput, vecString);
-    for (auto &str : vecString)
+    for (uint32_t i = 0; i < vecString.size(); i++)
     {
-
+        if (vecString[i] == "")
+        {
+            break;
+        }
+        else
+        {
+            PlotVec(vecString[i], ',', vecPlot);
+        }
     }
 
     // print and exit
