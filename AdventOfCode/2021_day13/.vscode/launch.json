@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
 
-        {
+        /* {
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
@@ -29,7 +29,7 @@
                 }
             ],
             "preLaunchTask": "C/C++: g++ build active file"
-        },
+        }, */
         {
             "name": "C/C++: g++.exe build active file",
             "type": "cppdbg",
@@ -51,6 +51,5 @@
             ],
             "preLaunchTask": "C/C++: g++.exe build active file"
         }
-
     ]
 }
