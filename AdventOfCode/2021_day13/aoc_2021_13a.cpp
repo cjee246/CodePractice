@@ -183,7 +183,7 @@ static void StackVec(vector<vector<uint16_t>> &rVec1,
 {
     for (uint16_t i = 0; i < rVec1.size(); i++)
     {
-        for (uint16_t j = 0; j < rVec1.size(); j++)
+        for (uint16_t j = 0; j < rVec1[i].size(); j++)
         {
             rVec1[i][j] += rVec2[i][j];
         }
