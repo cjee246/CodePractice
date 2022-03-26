@@ -81,8 +81,9 @@ static string ParseStrVec(vector<string> &rVecStr, vector<vector<string>> &rVecR
     {
         rVecRules[0].push_back(rVecStr[i].substr(0, 2));
         rVecRules[1].push_back(rVecStr[i].substr(6, 1));
-        rVecStr.erase(rVecStr.begin());
     }
+    rVecStr.clear();
+    rVecStr.shrink_to_fit();
     return first;
 }
 
@@ -140,7 +141,7 @@ static uint32_t FinalCount(const string &rPoly, vector<char> &rUnique, vector<ui
         {
             max = current;
         }
-        else if (current < min)
+        else if (current < min || min == 0)
         {
             min = current;
         }
