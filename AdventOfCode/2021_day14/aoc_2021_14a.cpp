@@ -141,7 +141,7 @@ static uint32_t FinalCount(const string &rPoly, vector<char> &rUnique, vector<ui
         {
             max = current;
         }
-        else if (current < min || min == 0)
+        if (current < min || min == 0)
         {
             min = current;
         }
