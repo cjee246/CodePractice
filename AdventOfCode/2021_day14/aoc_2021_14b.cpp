@@ -35,6 +35,8 @@ static void Polymerize(string &rPoly, vector<vector<string>> &rVecRules);
 static uint64_t FinalCount(const string &rPoly, vector<char> &rUnique, vector<uint64_t> &rCount);
 
 static void GetVecIdx(vector<vector<string>> &rVecRules, vector<uint8_t> &rVecIdx);
+static void InitVecIdx(const string &rPoly, vector<vector<uint64_t>> &rVecCount,
+                       vector<vector<string>> &rVecRules);
 static void StepVecIdx(vector<vector<uint64_t>> &rVecCount, const vector<uint8_t> &rVecIdx);
 
 /******************************************************************************/
@@ -57,21 +59,23 @@ int main()
     GetStrVec(fileInput, vecString);
     string poly = ParseStrVec(vecString, vecRules);
     vector<char> vecUnique = GetUnique(poly, vecRules);
-    vector<uint64_t> vecCount(vecUnique.size(), 0);
+    vector<uint64_t> vecTally(vecUnique.size(), 0);
 
     // do pair count indexing
-    vector<vector<uint64_t>> pairCounter;
-    vector<uint8_t> vecIdx(vecRules.size());
+    vector<vector<uint64_t>> vecCount(vecRules.size(),
+                                      vector<uint64_t>(vecRules[0].size()));
+    vector<uint8_t> vecIdx(vecRules[0].size());
     GetVecIdx(vecRules, vecIdx);
 
     // loop through pair counting index
+    InitVecIdx(poly, vecCount, vecRules);
     for (uint8_t i = 0; i < STEPS; i++)
     {
-        StepVecIdx(pairCounter, vecIdx);
+        StepVecIdx(vecCount, vecIdx);
     }
 
     // print and exit
-    cout << FinalCount(poly, vecUnique, vecCount) << '\n';
+    cout << FinalCount(poly, vecUnique, vecTally) << '\n';
     fileInput.close();
     return 0;
 }
@@ -159,13 +163,29 @@ static uint64_t FinalCount(const string &rPoly, vector<char> &rUnique, vector<ui
 
 static void GetVecIdx(vector<vector<string>> &rVecRules, vector<uint8_t> &rVecIdx)
 {
-    string str;
     vector<string>::iterator it;
-    for (uint8_t i = 0; i < rVecRules.size(); i++)
+    for (uint8_t i = 0; i < rVecRules[0].size(); i++)
     {
-        str = rVecRules[0][i][0] + rVecRules[1][i][0];
+        string str = "";
+        str.push_back(rVecRules[0][i][0]);
+        str.push_back(rVecRules[1][i][0]);
         it = find(rVecRules[0].begin(), rVecRules[0].end(), str);
         rVecIdx[i] = it - rVecRules[0].begin();
+    }
+}
+
+static void InitVecIdx(const string &rPoly, vector<vector<uint64_t>> &rVecCount,
+                       vector<vector<string>> &rVecRules)
+{
+    string substr;
+    vector<string>::iterator it;
+    uint8_t idx;
+    for (uint64_t i = 0; i < rPoly.size() - 1; i++)
+    {
+        substr = rPoly.substr(i, 2);
+        it = find(rVecRules[0].begin(), rVecRules[0].end(), substr);
+        idx = it - rVecRules[0].begin();
+        rVecCount[0][idx]++;
     }
 }
 
