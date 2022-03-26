@@ -223,12 +223,19 @@ static uint64_t CountIdx(const vector<uint64_t> &rVecCount1,
     uint64_t current = 0, min = 0, max = 0;
     for (uint8_t i = 0; i < rUnique.size(); i++)
     {
+        // initialize counter, add if bookend char
         current = 0;
         uint8_t idx;
-        if (rUnique[i] == rFirst.front() || rUnique[i] == rFirst.back())
+        if (rUnique[i] == rFirst.front())
         {
             current++;
         }
+        if (rUnique[i] == rFirst.back())
+        {
+            current++;
+        }
+
+        // add if character in indexed pair
         for (uint8_t j = 0; j < rVecRules1.size(); j++)
         {
             if (rVecRules1[j].front() == rUnique[i])
@@ -240,6 +247,9 @@ static uint64_t CountIdx(const vector<uint64_t> &rVecCount1,
                 current += rVecCount1[j];
             }
         }
+
+        // divide by two (counting pairs)
+        // update min/max
         current /= 2;
         rVecTally[i] = current;
         if (current > max)
