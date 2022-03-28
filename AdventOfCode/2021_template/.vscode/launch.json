@@ -28,7 +28,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "C/C++: g++ build active file"
+            //"preLaunchTask": "C/C++: g++ build active file"
         },
         {
             "name": "C/C++: g++.exe build active file",
@@ -49,7 +49,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "C/C++: g++.exe build active file"
+            //"preLaunchTask": "C/C++: g++.exe build active file"
         }
 
     ]
