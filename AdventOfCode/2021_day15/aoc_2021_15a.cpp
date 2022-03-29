@@ -33,6 +33,11 @@ static vector<uint16_t> CheckNeighbors(vector<vector<uint8_t>> &rVecGrid,
                                        vector<vector<uint8_t>> &rVecVisited,
                                        vector<vector<uint16_t>> &rVecDist,
                                        vector<uint16_t> nodeCoords);
+static uint16_t UpdateDist(vector<vector<uint8_t>> &rVecGrid,
+                           vector<vector<uint8_t>> &rVecVisited,
+                           vector<vector<uint16_t>> &rVecDist,
+                           vector<uint16_t> nodeCoords,
+                           int8_t xOffset, int8_t yOffset);
 
 /******************************************************************************/
 /* MAIN */
@@ -59,13 +64,18 @@ int main()
     for (uint32_t i = 0; i < vecPath.size(); i++)
     {
         newCoord = CheckNeighbors(vecGrid, vecVisited, vecDist, vecPath[i]);
+        vecPath.push_back(newCoord);
+        if (newCoord[0] == vecGrid.size() - 1 && newCoord[1] == vecGrid[0].size() - 1)
+        {
+            break;
+        }
     }
 
     // maybe see here: https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
     // also this for windows printing variables: https://stackoverflow.com/questions/62537957/vs-code-local-variables-not-showing-correctly
 
     // print and exit
-    cout << '\n';
+    cout << vecDist[vecGrid.size() - 1][vecGrid[0].size() - 1] << '\n';
     fileInput.close();
     return 0;
 }
@@ -79,26 +89,77 @@ static vector<uint16_t> CheckNeighbors(vector<vector<uint8_t>> &rVecGrid,
                                        vector<uint16_t> nodeCoords)
 {
     uint16_t x = nodeCoords[0], y = nodeCoords[1];
+    int8_t xOffset = 0, yOffset = 0;
+    uint16_t xFinal, yFinal;
+    uint16_t dist1 = 0, dist2 = 0;
     if (x < rVecDist.size() - 1)
     {
-        UpdateDist(rVecDist, nodeCoords, +1, 0);
+        xOffset = +1;
+        yOffset = 0;
+        dist1 = UpdateDist(rVecGrid, rVecVisited, rVecDist, nodeCoords, xOffset, yOffset);
+        xFinal = x + xOffset;
+        yFinal = y + yOffset;
     }
     if (x > 0)
     {
-        UpdateDist(rVecDist, nodeCoords, -1, 0);
+        xOffset = -1;
+        yOffset = 0;
+        dist2 = UpdateDist(rVecGrid, rVecVisited, rVecDist, nodeCoords, xOffset, yOffset);
+        if (dist2 < dist1)
+        {
+            dist1 = dist2;
+            xFinal = x + xOffset;
+            yFinal = y + yOffset;
+        }
     }
     if (y < rVecDist[0].size() - 1)
     {
-        UpdateDist(rVecDist, nodeCoords, 0, +1);
+        xOffset = 0;
+        yOffset = +1;
+        dist2 = UpdateDist(rVecGrid, rVecVisited, rVecDist, nodeCoords, xOffset, yOffset);
+        if (dist2 < dist1)
+        {
+            dist1 = dist2;
+            xFinal = x + xOffset;
+            yFinal = y + yOffset;
+        }
     }
     if (y > 0)
     {
-        UpdateDist(rVecDist, nodeCoords, 0, -1);
+        xOffset = 0;
+        yOffset = -1;
+        dist2 = UpdateDist(rVecGrid, rVecVisited, rVecDist, nodeCoords, xOffset, yOffset);
+        if (dist2 < dist1)
+        {
+            dist1 = dist2;
+            xFinal = x + xOffset;
+            yFinal = y + yOffset;
+        }
     }
+    rVecVisited[x][y] = 1;
+    return {xFinal, yFinal};
 }
 
-static void UpdateDist(vector<vector<uint16_t>> &rVecDist,
-                       vector<uint16_t> nodeCoords,
-                       uint8_t xOffset, uint8_t yOffset)
+static uint16_t UpdateDist(vector<vector<uint8_t>> &rVecGrid,
+                           vector<vector<uint8_t>> &rVecVisited,
+                           vector<vector<uint16_t>> &rVecDist,
+                           vector<uint16_t> nodeCoords,
+                           int8_t xOffset, int8_t yOffset)
 {
+    uint16_t x = nodeCoords[0], y = nodeCoords[1];
+    uint16_t xNew = x + xOffset, yNew = y + yOffset;
+    if (rVecVisited[xNew][yNew])
+    {
+        return 60000;
+    }
+    uint16_t newDist = rVecGrid[x][y] + rVecGrid[xNew][yNew];
+    if (newDist < rVecDist[xNew][yNew])
+    {
+        rVecDist[xNew][yNew] = newDist;
+    }
+    else
+    {
+        newDist = rVecDist[xNew][yNew];
+    }
+    return newDist;
 }
