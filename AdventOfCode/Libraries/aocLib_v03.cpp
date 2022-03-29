@@ -93,7 +93,10 @@ namespace aocLib_v03
                 rVecGrid.push_back(vector<uint8_t>());
             }
         }
-        rVecGrid.pop_back();
+        if (rVecGrid.back().empty())
+        {
+            rVecGrid.pop_back();
+        }
     }
 
     void PlotVec(string &str, char delim, vector<vector<uint16_t>> &rVecPlot, bool invert)
