@@ -26,15 +26,15 @@ Plan
 
 numList = []
 for line in lines:
-    numbers = re.findall(r'\b\d+\b')
+    numbers = re.findall(r'\b\d+\b', line)
     for number in numbers:
         y1 = max(lines.index(line) - 1, 0)
-        y2 = min(lines.index(line) + 1, lines.__len__)
-        x1 = max(numbers.index(number) - 1, 0)
-        x2 = min(numbers.index(number) + len(number) + 1, len(line))
-        for i in range(x1, x2):
-            for j in range(y1, y2):
-                if not lines[j][i].isdigit() & lines[j][i] != '.':
+        y2 = min(lines.index(line) + 1, len(lines) - 1)
+        x1 = max(line.index(number) - 1, 0)
+        x2 = min(line.index(number) + len(number), len(line) - 1)
+        for i in range(y1, y2 + 1):
+            for j in range(x1, x2 + 1): 
+                if not lines[i][j].isdigit() and lines[i][j] != '.':
                     numList.append(int(number))
                     break
 print(sum(numList))
