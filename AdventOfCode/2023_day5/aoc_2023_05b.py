@@ -15,41 +15,47 @@ import aoc2023 as aoc
 
 # read file
 lines: list[str]
-lines = aoc.file_lines(aoc.data_filepath('example.txt'))
-# lines = aoc.file_lines(aoc.data_filepath('input.txt'))
+# lines = aoc.file_lines(aoc.data_filepath('example.txt'))
+lines = aoc.file_lines(aoc.data_filepath('input.txt'))
 
 '''
 Plan
 Order = destination start, source start, length
 
-- get seed number - for each seed number...
+- get first seed ranges
 
 - get new section
     - search for numbers, 
     - if no numbers new section
-- for each set, check if range
-    - if not in overlap range, number is the same
-    - if in range, do mapping and break
+- for each set, 
+    - start with lower limit
+    - track the upper limit as it gets truncated by ranges
+- restart seed range but starting at the upper limit of the previous run
 
 '''
-seeds = []
-seed_range = list(map(int, (re.findall(r'\b\d+\b', lines[0]))))
-for i in range(0, len(seed_range), 2):
-    seeds.extend(seed_range[i] + j for j in range(0, seed_range[i+1]))
-
+seeds = list(map(int, (re.findall(r'\b\d+\b', lines[0]))))
 locations = []
-for seed in seeds:
-    number = seed
-    changed = False
-    for i in range(1, len(lines)):
-        if re.findall(r'\b\d+\b', lines[i]):
-            code = list(map(int, (re.findall(r'\b\d+\b', lines[i]))))
-            if not changed and number in range(code[1], code[1] + code[2]):
-                number += code[0] - code[1]
-                changed = True
-        else:
-            changed = False
-    locations.append(number)
+for seed in seeds[::2]:
+    start = seed
+    length = seeds[seeds.index(seed) + 1] 
+    limit = seed + length - 1
+    while start < limit:
+        number = start
+        changed = False
+        for i in range(1, len(lines)):
+            if re.findall(r'\b\d+\b', lines[i]):
+                code = list(map(int, (re.findall(r'\b\d+\b', lines[i]))))
+                
+                if not changed and number in range(code[1], code[1] + code[2]):
+                    if (number + length) > (code[1] + code[2]):
+                        length -= ((number + length) - (code[1] + code[2]))
+                    number += code[0] - code[1]
+                    changed = True
+            else:
+                changed = False
+        locations.append(number)
+        start += length
+        length = limit - start
 print(min(locations))
 
 
